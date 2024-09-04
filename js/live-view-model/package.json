@@ -1,0 +1,100 @@
+{
+  "name": "live-view-model",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Core functionality for live-view-model",
+  "main": "./lib/commonjs/index.js",
+  "module": "./lib/module/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/typescript/module/src/index.d.ts",
+        "default": "./lib/module/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/src/index.d.ts",
+        "default": "./lib/commonjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "src",
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli lib",
+    "test": "jest"
+  },
+  "keywords": [
+    "live-view-model",
+    "phoenix"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guess/live-view-model.git"
+  },
+  "author": "Steve Strates <steve@strates.io> (https://github.com/guess)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guess/live-view-model/issues"
+  },
+  "homepage": "https://github.com/guess/live-view-model#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@guess/phoenix-js": "git+https://github.com/guess/phoenix-js.git",
+    "json-joy": "^9.9.1",
+    "lodash": "^4.17.21",
+    "mobx": "^6.13.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@types/jest": "^29.5.5",
+    "@types/lodash": "^4.17.7",
+    "babel-eslint": "^10.1.0",
+    "del-cli": "^5.1.0",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "globals": "^15.9.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.4.0"
+  },
+  "packageManager": "yarn@3.6.1",
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  }
+}
