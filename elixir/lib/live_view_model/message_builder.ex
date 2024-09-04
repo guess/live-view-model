@@ -18,7 +18,7 @@ defmodule LiveViewModel.MessageBuilder do
 
     {"state:patch",
      %{
-       patch: JSONDiff.diff(old_state_encoded, new_state_encoded),
+       patch: Jsonpatch.diff(old_state_encoded, new_state_encoded),
        version: version
      }}
   end

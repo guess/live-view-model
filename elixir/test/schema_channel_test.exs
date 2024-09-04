@@ -33,7 +33,7 @@ defmodule LiveViewModel.SchemaChanneltest do
       patch: patches
     })
 
-    paths = patches |> Enum.map(& &1["path"])
+    paths = patches |> Enum.map(& &1.path)
     assert "/thing/foo" in paths
     assert "/thing/updated_at" in paths
   end

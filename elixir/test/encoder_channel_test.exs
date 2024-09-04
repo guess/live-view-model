@@ -30,7 +30,7 @@ defmodule LiveViewModel.EncoderChannelTest do
 
     assert_push("state:patch", %{
       version: 1,
-      patch: [%{"op" => "replace", "path" => "/thing/baz", "value" => "not_bing"}]
+      patch: [%{op: "replace", path: "/thing/baz", value: "not_bing"}]
     })
   end
 end
