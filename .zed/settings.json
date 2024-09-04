@@ -1,0 +1,20 @@
+{
+  "language_overrides": {
+    "JavaScript": {
+      "format_on_save": {
+        "external": {
+          "command": "node_modules/.bin/eslint",
+          "arguments": ["--fix", "${file}"]
+        }
+      }
+    },
+    "TypeScript": {
+      "format_on_save": {
+        "external": {
+          "command": "node_modules/.bin/eslint",
+          "arguments": ["--fix", "${file}"]
+        }
+      }
+    }
+  }
+}
