@@ -2,17 +2,15 @@
 
 ## [Unreleased]
 
-### 🚨 Breaking Changes
-
 ### ✨ Added
 - Initial project setup
 - Core functionality for live-view-model
 
 ### 🛠️ Changed
 
-### ⛔ Deprecated
+### ⚠️ Deprecated
 
-### 👋 Removed
+### ⛔ Removed
 
 ### 🐛 Fixed
 
