@@ -8,7 +8,7 @@
 
 ### 🛠️ Changed
 
-### ⚠️ Deprecated
+### ⚰️ Deprecated
 
 ### ⛔ Removed
 
