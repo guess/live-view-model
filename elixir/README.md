@@ -1,5 +1,10 @@
 # LiveViewModel
 
+[![CI](https://github.com/guess/live-view-model/actions/workflows/ci.yml/badge.svg)](https://github.com/guess/live-view-model/actions/workflows/ci.yml)
+[![License](https://img.shields.io/hexpm/l/live_view_model.svg)](https://github.com/guess/live-view-model/blob/main/LICENSE.md)
+[![Version](https://img.shields.io/hexpm/v/live_view_model.svg)](https://hex.pm/packages/live_view_model)
+[![Hex Docs](https://img.shields.io/badge/documentation-gray.svg)](https://hexdocs.pm/live_view_model)
+
 LiveViewModel is an Elixir library for building servers that power interactive web and mobile applications. It offers an alternative approach to state management and client-server communication, particularly suited for applications that don't rely on server-side HTML rendering.
 
 ## Key Concepts
