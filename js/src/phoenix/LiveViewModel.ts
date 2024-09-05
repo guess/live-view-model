@@ -10,19 +10,19 @@ import { set } from 'lodash';
 import { BehaviorSubject, filter, Subscription, switchMap } from 'rxjs';
 import LiveChannel from './LiveChannel';
 import type { LiveStateChange, LiveStatePatch } from './LiveChannel';
-import type { PhoenixRepo } from './PhoenixRepo';
+import type { PhoenixConnection } from './PhoenixConnection';
 import { CustomEvent } from './LiveSocket';
 
 export class LiveViewModel {
   [key: string]: unknown;
-  protected repo: PhoenixRepo;
+  protected repo: PhoenixConnection;
   protected _channel$ = new BehaviorSubject<LiveChannel | null>(null);
   private _subscriptions: Subscription[] = [];
   protected observableProps: Set<string> = new Set();
   protected topic: string;
   private subscriptions: Subscription[] = [];
 
-  constructor(repo: PhoenixRepo, topic: string) {
+  constructor(repo: PhoenixConnection, topic: string) {
     this.repo = repo;
     this.topic = topic;
     this.setupAutoUpdate();

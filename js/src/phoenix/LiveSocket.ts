@@ -1,7 +1,7 @@
 import { Channel, Socket } from '@guess/phoenix-js';
 import { BehaviorSubject, filter, map, Observable, Subject } from 'rxjs';
 
-export type CustomEvent = { name?: string; detail: object };
+export type CustomEvent = { name?: string; detail?: object };
 export type LiveSocketEvent = {
   topic: string;
   type: string;
@@ -27,8 +27,7 @@ export class LiveSocket {
       this.socket.onError((error: SocketError) =>
         this.emitError(this.topic, 'socket error', error)
       );
-      this.socket.onOpen((resp: CustomEvent) => {
-        console.log('TODOTYPE onopen: ', resp);
+      this.socket.onOpen((resp?: CustomEvent) => {
         this.emit(this.topic, 'livestate-connect', resp);
       });
       this.socket.connect();
@@ -49,7 +48,8 @@ export class LiveSocket {
     return this.socket.channel(topic, params);
   }
 
-  emit(topic: string, type: string, event: CustomEvent) {
+  emit(topic: string, type: string, customEvent?: CustomEvent) {
+    const event = customEvent || {};
     this.subject.next({ topic, type, event });
   }
 
