@@ -6,7 +6,7 @@
 
 ### ✨ Added
 - Initial project setup
-- Core functionality for LiveViewModel
+- Core functionality for live-view-model
 
 ### 🛠️ Changed
 
