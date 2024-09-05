@@ -1,14 +1,12 @@
 # Changelog
----
 
 ## [Unreleased]
----
 
 ### 🚨 Breaking Changes
 
 ### ✨ Added
 - Initial project setup
-- Core functionality for live-view-model
+- Core functionality for LiveViewModel
 
 ### 🛠️ Changed
 
@@ -22,6 +20,5 @@
 
 
 ## 0.1.0 (2024-09-04)
----
 
 Initial project release 🚧
