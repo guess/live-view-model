@@ -97,7 +97,7 @@ export class LiveViewModel {
     this.channel?.pushEvent(eventType, payload);
   }
 
-  setValueFromPath(path: string[], value: unknown): unknown {
+  setValueFromPath<T = unknown>(path: string[], value: T): T | null {
     const topLevelProp = path[0];
     const restOfPath = path.slice(1);
     let finalValue;
@@ -117,13 +117,11 @@ export class LiveViewModel {
           set(newValue, restOfPath, value);
           (this as Record<string, unknown>)[topLevelProp] = newValue;
           finalValue = newValue;
-        } else {
-          return null;
         }
       }
     });
 
-    return finalValue;
+    return finalValue || null;
   }
 
   subscribeToChannelEvent(

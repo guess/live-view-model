@@ -13,6 +13,7 @@
 ### ⛔ Removed
 
 ### 🐛 Fixed
+- js: fix type signature of `setValueFromPath` in `LiveViewModel`
 
 ### 🔒 Security
 
