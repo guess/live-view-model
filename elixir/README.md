@@ -130,4 +130,4 @@ one or many events to dispatch on the calling DOM Element:
 
 ## Inspriation
 
-This library was adapted from [live_state](github.com/launchscout/live_state)
+This library was adapted from [live_state](https://github.com/launchscout/live_state)
