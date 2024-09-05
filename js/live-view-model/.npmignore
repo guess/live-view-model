@@ -1,0 +1,25 @@
+# Development files
+src/
+tsconfig.json
+tsconfig.commonjs.json
+.eslintrc.js
+jest.config.js
+
+# Version control
+.git
+.gitignore
+
+# Editor files
+.vscode/
+
+# Dependency directories
+node_modules/
+
+# Build output (if not already excluded by 'files' in package.json)
+# lib/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
