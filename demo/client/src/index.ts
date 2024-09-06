@@ -8,7 +8,16 @@ const failedConnection = () => {
   }, 1000);
 };
 
-failedConnection();
+const successfulConnection = () => {
+  const token = "foobar";
+  const connection = connect("ws://localhost:4000/lvm", { token });
+  setTimeout(() => {
+    connection.disconnect();
+  }, 1000);
+};
+
+// failedConnection();
+successfulConnection();
 
 // const token = "foobar";
 // const connection = connect("ws://localhost:4000/lvm", { token });

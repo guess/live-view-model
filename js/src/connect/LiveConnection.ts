@@ -1,46 +1,33 @@
-import {
-  BehaviorSubject,
-  filter,
-  map,
-  Observable,
-  of,
-  Subscription,
-  switchMap,
-  zip,
-} from 'rxjs';
+import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { LiveChannel } from '../channel/LiveChannel.js';
 import { LiveSocket } from '../socket/LiveSocket.js';
 import { isNotNull } from '../utils/rxjs.js';
 
 export class LiveConnection {
   private url: string;
-  private _subscription?: Subscription;
   private _socket$ = new BehaviorSubject<LiveSocket | null>(null);
-  private _params$: BehaviorSubject<object | null>;
+  private params: object | null;
 
   constructor(url: string, params?: object) {
     this.url = url;
-    this._params$ = new BehaviorSubject(params || null);
-  }
-
-  updateParams(params: object) {
-    this._params$.next(params);
+    this.params = params || null;
   }
 
   connect() {
-    console.debug('connecting to socket');
-    this._subscription = buildSocket(this.url, this._params$).subscribe(
-      (socket) => {
-        console.debug('connected to socket');
-        this._socket$.next(socket);
-      }
-    );
+    console.debug('connecting to socket...');
+    const socket = new LiveSocket(this.url, {
+      params: this.params || {},
+      debugger: (kind: string, msg: string, data: unknown) => {
+        console.debug(`${kind}: ${msg}`, data);
+      },
+    });
+    socket.connect();
+    this._socket$.next(socket);
   }
 
   disconnect() {
-    console.debug('disconnecting from socket');
+    console.debug('disconnecting from socket...');
     this.socket?.disconnect();
-    this._subscription?.unsubscribe();
   }
 
   createChannel$(topic: string, params?: object): Observable<LiveChannel> {
@@ -51,33 +38,10 @@ export class LiveConnection {
   }
 
   get socket(): LiveSocket | null {
-    return this._socket$.value;
+    return this._socket$.getValue();
   }
 
   get socket$(): Observable<LiveSocket> {
     return this._socket$.asObservable().pipe(filter(isNotNull));
   }
 }
-
-const buildSocket = (
-  url: string,
-  params$: Observable<object | null>
-): Observable<LiveSocket> => {
-  return params$.pipe(
-    map((params) => {
-      const socket = new LiveSocket(url, {
-        params: params || {},
-        debugger: (kind: string, msg: string, data: unknown) => {
-          console.debug(`${kind}: ${msg}`, data);
-        },
-      });
-      socket.connect();
-      return socket;
-    }),
-    switchMap((socket) => {
-      return zip(of(socket), socket.getEventStream$(socket.url, 'lvm-connect'));
-    }),
-    // eslint-disable-next-line
-    map(([socket, _isConnected]) => socket)
-  );
-};

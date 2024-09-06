@@ -5,11 +5,12 @@ import { PhoenixSocketError } from './PhoenixSocketError.js';
 import { PhoenixChannel } from '../channel/PhoenixChannel.js';
 import { LiveSocketEventType } from './LiveSocketEventType.js';
 import { LiveSocketErrorType } from './LiveSocketErrorType.js';
+import { LiveSocketStatus } from './LiveSocketStatus.js';
 
 export class LiveSocket {
   private socket: PhoenixSocket;
   private subject = new Subject<LiveSocketEvent>();
-  private isConnected: boolean = false;
+  private status: LiveSocketStatus = LiveSocketStatus.disconnected;
 
   constructor(
     public url: string,
@@ -19,19 +20,29 @@ export class LiveSocket {
   }
 
   connect(): void {
-    if (!this.isConnected) {
+    if (this.status === LiveSocketStatus.disconnected) {
+      this.setStatus(LiveSocketStatus.connecting);
       this.socket.onError((error: PhoenixSocketError) =>
         this.emitError(this.url, 'socket', error)
       );
-      this.socket.onOpen(() => this.emitEvent(this.url, 'lvm-connect'));
+      this.socket.onOpen(() => {
+        this.setStatus(LiveSocketStatus.connected);
+      });
+      this.socket.onClose(() => {
+        this.setStatus(LiveSocketStatus.disconnected);
+      });
       this.socket.connect();
-      this.isConnected = true;
+    } else {
+      console.warn('socket already connected');
     }
   }
 
   disconnect(): void {
-    this.socket.disconnect();
-    this.isConnected = false;
+    if (this.status === LiveSocketStatus.connected) {
+      this.socket.disconnect();
+    } else {
+      console.warn('socket not connected');
+    }
   }
 
   channel(topic: string, params?: object): PhoenixChannel {
@@ -64,5 +75,10 @@ export class LiveSocket {
       filter((e: LiveSocketEvent) => e.event === event),
       map((e: LiveSocketEvent) => e.payload || {})
     );
+  }
+
+  private setStatus(status: LiveSocketStatus): void {
+    this.status = status;
+    this.emitEvent(this.url, 'lvm-connect', { status: this.status });
   }
 }
