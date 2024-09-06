@@ -1,7 +1,6 @@
 # Development files
 src/
 tsconfig.json
-tsconfig.commonjs.json
 .eslintrc.js
 jest.config.js
 
