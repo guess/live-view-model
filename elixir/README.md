@@ -61,16 +61,16 @@ First you need to set up a socket as you would with other normal [Phoenix Channe
 
 1. On your Endpoint module, set up a socket for your channel:
 ```elixir
-defmodule MyAppWeb.Endpoint do
-  socket "/socket", PgLiveHeroWeb.Channels.LiveViewModelSocket
+defmodule DemoWeb.Endpoint do
+  socket "/lvm", DemoWeb.Socket
 ...
 ```
 2. Then create the socket module with the topic to listen to:
 ```elixir
-defmodule MyAppWeb.Socket do
+defmodule DemoWeb.Socket do
   use Phoenix.Socket
 
-  channel "topic", MyAppWeb.Channel
+  channel "topic", DemoWeb.Channel
   @impl true
   def connect(_params, socket), do: {:ok, socket}
 
@@ -81,8 +81,8 @@ end
 3. Create your channel using the `LiveViewModel.Channel` behaviour:
 
 ```elixir
-defmodule MyAppWeb.Channel do
-  use LiveViewModel.Channel, web_module: MyAppWeb
+defmodule DemoWeb.Channel do
+  use LiveViewModel.Channel, web_module: DemoWeb
 ...
 ```
 
