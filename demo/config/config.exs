@@ -7,15 +7,19 @@
 # General application configuration
 import Config
 
+config :demo,
+  generators: [timestamp_type: :utc_datetime]
+
 # Configures the endpoint
 config :demo, DemoWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [json: DemoWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Demo.PubSub,
-  live_view: [signing_salt: "7AU2+IaA"]
+  live_view: [signing_salt: "bl/syhtz"]
 
 # Configures the mailer
 #
@@ -28,8 +32,8 @@ config :demo, Demo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.14.41",
-  default: [
+  version: "0.17.11",
+  demo: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -38,8 +42,8 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.2.4",
-  default: [
+  version: "3.4.3",
+  demo: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

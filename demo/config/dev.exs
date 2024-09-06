@@ -4,8 +4,8 @@ import Config
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we use it
-# with esbuild to bundle .js and .css sources.
+# watchers to your application. For example, we can use it
+# to bundle .js and .css sources.
 config :demo, DemoWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
@@ -13,10 +13,10 @@ config :demo, DemoWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "zksoI9ntuH/0NqZ4dPPs8nM2Rgtp5oUwjW/1ts5c3MZn83K6eqBU+Qx9q+gk2sAv",
+  secret_key_base: "nBAaOHGDaFm2KEkAIHKajXI/lnmcEGokzHxJRf2tr9IO8HE05i4sXxdFvPX9WEXE",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:demo, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:demo, ~w(--watch)]}
   ]
 
 # ## SSL Support

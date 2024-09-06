@@ -4,14 +4,13 @@ import Config
 # you can enable the server option below.
 config :demo, DemoWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "4bay27FeTb/4lwvoT/0LV7MfWuFbfyTHRoN0QCp56XGjtVcIshJF1p2LLvQmWFVi",
+  secret_key_base: "Fk6/VZFBun6s6ax71l+VlO/qo+UnGJA7AD0n8BtKN64sMd4CCWqYktQNECPkjLL0",
   server: false
 
-# In test we don't send emails.
-config :demo, Demo.Mailer,
-  adapter: Swoosh.Adapters.Test
+# In test we don't send emails
+config :demo, Demo.Mailer, adapter: Swoosh.Adapters.Test
 
-# Disable swoosh api client as it is only required for production adapters.
+# Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
