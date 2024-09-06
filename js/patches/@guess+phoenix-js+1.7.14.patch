@@ -1,0 +1,62 @@
+diff --git a/node_modules/@guess/phoenix-js/src/ajax.js b/node_modules/@guess/phoenix-js/src/ajax.js
+index 3e79274..0edd902 100644
+--- a/node_modules/@guess/phoenix-js/src/ajax.js
++++ b/node_modules/@guess/phoenix-js/src/ajax.js
+@@ -1,16 +1,16 @@
+ import {
+-  global,
++  globalContext,
+   XHR_STATES
+ } from "./constants"
+ 
+ export default class Ajax {
+ 
+   static request(method, endPoint, accept, body, timeout, ontimeout, callback){
+-    if(global.XDomainRequest){
+-      let req = new global.XDomainRequest() // IE8, IE9
++    if(globalContext.XDomainRequest){
++      let req = new globalContext.XDomainRequest() // IE8, IE9
+       return this.xdomainRequest(req, method, endPoint, body, timeout, ontimeout, callback)
+     } else {
+-      let req = new global.XMLHttpRequest() // IE7+, Firefox, Chrome, Opera, Safari
++      let req = new globalContext.XMLHttpRequest() // IE7+, Firefox, Chrome, Opera, Safari
+       return this.xhrRequest(req, method, endPoint, accept, body, timeout, ontimeout, callback)
+     }
+   }
+diff --git a/node_modules/@guess/phoenix-js/src/constants.js b/node_modules/@guess/phoenix-js/src/constants.js
+index 499d4a9..f659294 100644
+--- a/node_modules/@guess/phoenix-js/src/constants.js
++++ b/node_modules/@guess/phoenix-js/src/constants.js
+@@ -1,6 +1,6 @@
+ export const globalSelf = typeof self !== "undefined" ? self : null
+ export const phxWindow = typeof window !== "undefined" ? window : null
+-export const global = globalSelf || phxWindow || global
++export const globalContext = globalSelf || phxWindow || (typeof global !== "undefined" ? global : null);
+ export const DEFAULT_VSN = "2.0.0"
+ export const SOCKET_STATES = {connecting: 0, open: 1, closing: 2, closed: 3}
+ export const DEFAULT_TIMEOUT = 10000
+diff --git a/node_modules/@guess/phoenix-js/src/socket.js b/node_modules/@guess/phoenix-js/src/socket.js
+index 8da13dd..dee2d35 100644
+--- a/node_modules/@guess/phoenix-js/src/socket.js
++++ b/node_modules/@guess/phoenix-js/src/socket.js
+@@ -1,5 +1,5 @@
+ import {
+-  global,
++  globalContext,
+   phxWindow,
+   CHANNEL_EVENTS,
+   DEFAULT_TIMEOUT,
+@@ -114,11 +114,11 @@ export default class Socket {
+     this.sendBuffer = []
+     this.ref = 0
+     this.timeout = opts.timeout || DEFAULT_TIMEOUT
+-    this.transport = opts.transport || global.WebSocket || LongPoll
++    this.transport = opts.transport || globalContext.WebSocket || LongPoll
+     this.primaryPassedHealthCheck = false
+     this.longPollFallbackMs = opts.longPollFallbackMs
+     this.fallbackTimer = null
+-    this.sessionStore = opts.sessionStorage || (global && global.sessionStorage)
++    this.sessionStore = opts.sessionStorage || (globalContext && globalContext.sessionStorage)
+     this.establishedConnections = 0
+     this.defaultEncoder = Serializer.encode.bind(Serializer)
+     this.defaultDecoder = Serializer.decode.bind(Serializer)

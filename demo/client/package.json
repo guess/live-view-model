@@ -6,15 +6,20 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "postinstall": "patch-package"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "live-view-model": "file:../../js"
+    "live-view-model": "file:../../js",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/xmlhttprequest": "^1.8.2",
+    "patch-package": "^8.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.5.4"
   }

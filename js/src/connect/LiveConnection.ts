@@ -8,11 +8,11 @@ import {
   switchMap,
   zip,
 } from 'rxjs';
-import LiveChannel from './LiveChannel';
-import { isNotNull } from '../utils/rxjs';
-import { LiveSocket } from './LiveSocket';
+import { LiveChannel } from '../channel/LiveChannel.js';
+import { LiveSocket } from '../socket/LiveSocket.js';
+import { isNotNull } from '../utils/rxjs.js';
 
-export class PhoenixConnection {
+export class LiveConnection {
   private url: string;
   private _subscription?: Subscription;
   private _socket$ = new BehaviorSubject<LiveSocket | null>(null);
@@ -75,10 +75,7 @@ const buildSocket = (
       return socket;
     }),
     switchMap((socket) => {
-      return zip(
-        of(socket),
-        socket.getEventStream$(socket.topic, 'livestate-connect')
-      );
+      return zip(of(socket), socket.getEventStream$(socket.url, 'lvm-connect'));
     }),
     // eslint-disable-next-line
     map(([socket, _isConnected]) => socket)
