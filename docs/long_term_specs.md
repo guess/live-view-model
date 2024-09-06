@@ -6,8 +6,10 @@ The live-view-model library is designed to synchronize state between Phoenix Cha
 
 ## 2. Core Components
 
-### 2.1. PhoenixConnection
-Responsible for managing the WebSocket connection to the Phoenix server.
+### 2.1. Socket Connection
+- `LiveConnection`: Manages the WebSocket connection to the Phoenix server
+- `LiveChannel`: Represents a channel subscription
+- `LiveSocket`: Represents the WebSocket connection
 
 ### 2.2. Decorators
 - `@liveViewModel`: Sets up a class as a live view model
