@@ -14,10 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "live-view-model": "file:../../js",
+    "ws": "^8.18.0",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
+    "@types/ws": "^8.5.12",
     "@types/xmlhttprequest": "^1.8.2",
     "patch-package": "^8.0.0",
     "tsx": "^4.19.0",

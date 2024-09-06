@@ -16,7 +16,10 @@ defmodule DemoWeb.Endpoint do
     longpoll: [connect_info: [session: @session_options]]
   )
 
-  socket("/lvm", DemoWeb.Socket, websocket: [check_origin: false])
+  socket("/lvm", DemoWeb.Socket,
+    websocket: [check_origin: false],
+    longpoll: true
+  )
 
   # Serve at "/" the static files from "priv/static" directory.
   #
