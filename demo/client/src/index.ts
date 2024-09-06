@@ -1,13 +1,15 @@
+import "./global.js";
 import { connect } from "live-view-model";
-import * as xmlhttprequest from "xmlhttprequest";
-import WebSocket from "ws";
 
-// Patch XMLHttpRequest to emulate browser environment for longpoll
-globalThis.XMLHttpRequest = xmlhttprequest.XMLHttpRequest;
+const failedConnection = () => {
+  const connection = connect("ws://localhost:4000/lvm");
+  setTimeout(() => {
+    connection.disconnect();
+  }, 1000);
+};
 
-// Patch WebSocket to emulate browser environment for websockets
-global.WebSocket = WebSocket;
+failedConnection();
 
-const token = "foobar";
-const connection = connect("ws://localhost:4000/lvm", { token });
-console.log(connection);
+// const token = "foobar";
+// const connection = connect("ws://localhost:4000/lvm", { token });
+// console.log(connection);

@@ -48,7 +48,7 @@ export class LiveSocket {
     type: LiveSocketErrorType,
     error: PhoenixSocketError
   ): void {
-    console.error(`error: ${type} error from topic: ${topic}`, error);
+    // console.error(`error: ${type} error from topic: ${topic}`, error);
     this.emitEvent(topic, 'lvm-error', {
       type,
       message: error.message || error.reason || 'Unknown error',
