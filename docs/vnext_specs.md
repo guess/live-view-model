@@ -1,5 +1,5 @@
 
-# Simplified Technical Specification for live-view-model Library
+# Technical Specification for live-view-model Library
 
 ## 1. Overview
 

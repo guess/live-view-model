@@ -1,5 +1,7 @@
 # Technical Specification for live-view-model Library
 
+This document outlines the long-term goals for the live-view-model library.
+
 ## 1. Overview
 
 The live-view-model library is designed to synchronize state between Phoenix Channels and MobX observables in TypeScript applications. It provides a set of decorators and utility functions to create view models that automatically sync with the server, handle events, and manage errors.
