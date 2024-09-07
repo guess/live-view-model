@@ -16,9 +16,7 @@ const failedConnection = () => {
 
 @liveViewModel("room:lobby")
 class LobbyViewModel {
-  constructor(private conn: LiveConnection) {
-    console.log("LobbyViewModel constructor");
-  }
+  constructor(private conn: LiveConnection) {}
 }
 
 // Example of a failed connection:
