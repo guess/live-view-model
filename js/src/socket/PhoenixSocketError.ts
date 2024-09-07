@@ -1,4 +1,9 @@
 export type PhoenixSocketError = {
-  reason?: string;
+  type: string;
   message: string;
+  code: string;
+};
+
+export type PhoenixSocketErrorEvent = {
+  error: PhoenixSocketError;
 };

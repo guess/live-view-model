@@ -1,4 +1,4 @@
-export enum LiveSocketStatus {
+export enum ConnectionStatus {
   disconnected = 'disconnected',
   connecting = 'connecting',
   connected = 'connected',
