@@ -1,3 +1,4 @@
+import { LiveSocketError } from "../../../js/lib/typescript/socket/LiveSocketError.js";
 import "./global.js";
 import {
   connect,
@@ -6,7 +7,6 @@ import {
   liveViewModel,
   LiveConnection,
   liveEvent,
-  ViewModel,
   PhoenixSocketError,
   liveError,
 } from "live-view-model";
@@ -28,7 +28,7 @@ class LobbyViewModel {
   }
 
   @liveError()
-  handleError(error: PhoenixSocketError) {
+  handleError(error: LiveSocketError) {
     console.log("ERROR!!!", error);
   }
 }
@@ -39,9 +39,9 @@ class LobbyViewModel {
 const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
+join(lobby);
+lobby.sendMessage("Hello, world!");
 
 setTimeout(() => {
-  lobby.sendMessage("Hello, world!");
-  // join(lobby);
   // setTimeout(() => leave(lobby), 1000);
 }, 1000);
