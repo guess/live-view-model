@@ -29,7 +29,3 @@ const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
 join(lobby);
 setTimeout(() => leave(lobby), 1000);
-
-// const token = "foobar";
-// const connection = connect("ws://localhost:4000/lvm", { token });
-// console.log(connection);
