@@ -18,7 +18,8 @@ defmodule DemoWeb.ChatChannel do
   end
 
   @impl true
-  def handle_event("send_message", _params, state) do
+  def handle_event("send_message", %{"message" => message}, state) do
+    IO.puts("Sending message: #{message}")
     {:noreply, state}
   end
 end

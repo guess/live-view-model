@@ -1,6 +1,6 @@
 import { LiveConnection } from '../connect/LiveConnection.js';
 import { LiveChannel } from '../channel/LiveChannel.js';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 export function liveViewModel(topic: string) {
   // eslint-disable-next-line

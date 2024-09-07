@@ -53,7 +53,9 @@ export class LiveSocket {
   }
 
   emitEvent(topic: string, event: LiveSocketEventType, payload?: object): void {
-    console.log(`event: ${event} from topic: ${topic}`, payload);
+    if (event !== 'lvm-error') {
+      console.log(`event: ${event} from topic: ${topic}`, payload);
+    }
     this.subject.next({ topic, event, payload });
   }
 
@@ -62,13 +64,14 @@ export class LiveSocket {
     type: LiveSocketErrorType,
     error?: PhoenixSocketError
   ): void {
-    // console.error(`error: ${type} error from topic: ${topic}`, error);
-    this.emitEvent(topic, 'lvm-error', {
+    const event = {
       type,
       message: error?.message || error?.reason || 'Unknown error',
       code: error?.code,
       error,
-    });
+    };
+    console.log(`error: ${type} error from topic: ${topic}`, event.message);
+    this.emitEvent(topic, 'lvm-error', event);
   }
 
   getEventStream$(

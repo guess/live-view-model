@@ -30,6 +30,7 @@ export class LiveChannel {
     if (this.status === ConnectionStatus.disconnected) {
       this.setStatus(ConnectionStatus.connecting);
       this.channel.onError((event?: PhoenixSocketErrorEvent) => {
+        // console.log('channel error', event);
         this.emitError('channel', event?.error);
       });
       this.channel
@@ -63,6 +64,10 @@ export class LiveChannel {
 
   get topic(): string {
     return this.channel.topic;
+  }
+
+  pushEvent(eventName: string, payload: object): void {
+    this.channel.push(`lvm_evt:${eventName}`, payload);
   }
 
   private emitEvent(event: LiveSocketEventType, payload?: object) {

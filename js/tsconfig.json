@@ -4,11 +4,11 @@
     "paths": {
       "live-view-model": ["src/index"]
     },
-    "target": "ES2018",
+    "target": "ESNext",
     "module": "Node16",
     "moduleResolution": "Node16",
     "types": ["@types/node"],
-    "lib": ["ES2018"],
+    "lib": ["ESNext"],
     "declaration": true,
     "declarationDir": "./lib/typescript",
     "rootDir": "./src",
@@ -18,7 +18,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "allowJs": true,
+    "allowJs": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts", "eslint.config.js"]

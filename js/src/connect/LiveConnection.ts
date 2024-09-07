@@ -2,6 +2,8 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { LiveChannel } from '../channel/LiveChannel.js';
 import { LiveSocket } from '../socket/LiveSocket.js';
 import { isNotNull } from '../utils/rxjs.js';
+import { LiveSocketErrorType } from 'src/socket/LiveSocketErrorType.js';
+import { PhoenixSocketError } from 'src/socket/PhoenixSocketError.js';
 
 export class LiveConnection {
   private url: string;
@@ -43,5 +45,17 @@ export class LiveConnection {
 
   get socket$(): Observable<LiveSocket> {
     return this._socket$.asObservable().pipe(filter(isNotNull));
+  }
+
+  emitError(
+    topic: string,
+    type: LiveSocketErrorType,
+    error?: PhoenixSocketError
+  ): void {
+    this.socket?.emitError(topic, type, {
+      type,
+      message: error?.message || error?.reason || 'Unknown error',
+      code: error?.code,
+    });
   }
 }
