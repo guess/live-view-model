@@ -1,7 +1,4 @@
-import { LiveChannel } from './channel/LiveChannel.js';
-import { LiveConnection } from './connect/LiveConnection.js';
 import { LiveViewModel } from './LiveViewModel.js';
-import { LiveSocket } from './socket/LiveSocket.js';
 
 // socket
 export {
@@ -23,7 +20,7 @@ export {
 // connect
 export { LiveConnection, connect } from './connect/index.js';
 
-export { liveViewModel, liveEvent } from './decorators/index.js';
+export { liveViewModel, liveEvent, liveError } from './decorators/index.js';
 
 export {
   // utils

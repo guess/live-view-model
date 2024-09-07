@@ -1,14 +1,17 @@
 import { LiveConnection } from '../connect/LiveConnection.js';
 import { LiveChannel } from '../channel/LiveChannel.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { PhoenixSocketError } from 'src/socket/PhoenixSocketError.js';
 
 export function liveViewModel(topic: string) {
   // eslint-disable-next-line
   return function <T extends { new (...args: any[]): object }>(constructor: T) {
     return class extends constructor {
+      topic = topic;
       connection: LiveConnection;
       _channel$ = new BehaviorSubject<LiveChannel | null>(null);
       _subscription: Subscription | null = null;
+      _errorSubscription: Subscription | null = null;
 
       // eslint-disable-next-line
       constructor(...args: any[]) {
@@ -22,6 +25,17 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
+
+        // Set up the error subscription
+        this._errorSubscription = this.connection
+          .getErrorStream$(topic)
+          .subscribe({
+            next: (error: PhoenixSocketError) => {
+              if (this.constructor.prototype.__liveErrorHandler) {
+                this.constructor.prototype.__liveErrorHandler.call(this, error);
+              }
+            },
+          });
       }
 
       public join(params?: object) {
@@ -41,6 +55,9 @@ export function liveViewModel(topic: string) {
         }
         if (this._subscription) {
           this._subscription.unsubscribe();
+        }
+        if (this._errorSubscription) {
+          this._errorSubscription.unsubscribe();
         }
       }
 

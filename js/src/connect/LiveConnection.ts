@@ -58,4 +58,8 @@ export class LiveConnection {
       code: error?.code,
     });
   }
+
+  getErrorStream$(topic: string): Observable<PhoenixSocketError> {
+    return this.socket!.getErrorStream$(topic);
+  }
 }

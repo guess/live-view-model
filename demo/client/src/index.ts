@@ -7,6 +7,8 @@ import {
   LiveConnection,
   liveEvent,
   ViewModel,
+  PhoenixSocketError,
+  liveError,
 } from "live-view-model";
 
 const failedConnection = () => {
@@ -24,6 +26,11 @@ class LobbyViewModel {
   sendMessage(message: string): object {
     return { message };
   }
+
+  @liveError()
+  handleError(error: PhoenixSocketError) {
+    console.log("ERROR!!!", error);
+  }
 }
 
 // Example of a failed connection:
@@ -32,6 +39,9 @@ class LobbyViewModel {
 const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
-join(lobby);
-lobby.sendMessage("Hello, world!");
-setTimeout(() => leave(lobby), 1000);
+
+setTimeout(() => {
+  lobby.sendMessage("Hello, world!");
+  // join(lobby);
+  // setTimeout(() => leave(lobby), 1000);
+}, 1000);

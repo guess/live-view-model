@@ -85,6 +85,14 @@ export class LiveSocket {
     );
   }
 
+  getErrorStream$(topic: string): Observable<PhoenixSocketError> {
+    return this.subject.asObservable().pipe(
+      filter((e: LiveSocketEvent) => e.topic === topic || e.topic === 'socket'),
+      filter((e: LiveSocketEvent) => e.event === 'lvm-error'),
+      map((e: LiveSocketEvent) => e.payload as PhoenixSocketError)
+    );
+  }
+
   private setStatus(status: ConnectionStatus): void {
     this.status = status;
     this.emitEvent('socket', 'lvm-connect', { status: this.status });
