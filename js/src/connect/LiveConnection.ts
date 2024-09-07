@@ -4,6 +4,7 @@ import { LiveSocket } from '../socket/LiveSocket.js';
 import { isNotNull } from '../utils/rxjs.js';
 import { LiveSocketErrorType } from 'src/socket/LiveSocketErrorType.js';
 import { PhoenixSocketError } from 'src/socket/PhoenixSocketError.js';
+import { LiveSocketError } from 'src/socket/LiveSocketError.js';
 
 export class LiveConnection {
   private url: string;
@@ -59,7 +60,7 @@ export class LiveConnection {
     });
   }
 
-  getErrorStream$(topic: string): Observable<PhoenixSocketError> {
+  getErrorStream$(topic: string): Observable<LiveSocketError> {
     return this.socket!.getErrorStream$(topic);
   }
 }

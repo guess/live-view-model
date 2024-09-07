@@ -1,3 +1,4 @@
+// errors received from websockets and longpoll
 export type PhoenixSocketError = {
   type?: string;
   message?: string;
@@ -8,3 +9,5 @@ export type PhoenixSocketError = {
 export type PhoenixSocketErrorEvent = {
   error: PhoenixSocketError;
 };
+
+export const phoenixSocketErrorKeys = ['type', 'message', 'reason', 'code'];

@@ -4,11 +4,13 @@ import { LiveSocketEvent } from './LiveSocketEvent.js';
 import {
   PhoenixSocketError,
   PhoenixSocketErrorEvent,
+  phoenixSocketErrorKeys,
 } from './PhoenixSocketError.js';
 import { PhoenixChannel } from '../channel/PhoenixChannel.js';
 import { LiveSocketEventType } from './LiveSocketEventType.js';
 import { LiveSocketErrorType } from './LiveSocketErrorType.js';
 import { ConnectionStatus } from '../connect/ConnectionStatus.js';
+import { LiveSocketError } from './LiveSocketError.js';
 
 export class LiveSocket {
   private socket: PhoenixSocket;
@@ -62,14 +64,21 @@ export class LiveSocket {
   emitError(
     topic: string,
     type: LiveSocketErrorType,
-    error?: PhoenixSocketError
+    error?: Partial<PhoenixSocketError>
   ): void {
-    const event = {
+    const event: LiveSocketError = {
       type,
       message: error?.message || error?.reason || 'Unknown error',
-      code: error?.code,
-      error,
     };
+    if (error?.code) {
+      event.code = error.code;
+    }
+    if (
+      error &&
+      Object.keys(error).some((key) => !phoenixSocketErrorKeys.includes(key))
+    ) {
+      event.error = error;
+    }
     console.log(`error: ${type} error from topic: ${topic}`, event.message);
     this.emitEvent(topic, 'lvm-error', event);
   }
@@ -85,11 +94,11 @@ export class LiveSocket {
     );
   }
 
-  getErrorStream$(topic: string): Observable<PhoenixSocketError> {
+  getErrorStream$(topic: string): Observable<LiveSocketError> {
     return this.subject.asObservable().pipe(
       filter((e: LiveSocketEvent) => e.topic === topic || e.topic === 'socket'),
       filter((e: LiveSocketEvent) => e.event === 'lvm-error'),
-      map((e: LiveSocketEvent) => e.payload as PhoenixSocketError)
+      map((e: LiveSocketEvent) => e.payload as LiveSocketError)
     );
   }
 

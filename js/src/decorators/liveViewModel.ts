@@ -2,6 +2,7 @@ import { LiveConnection } from '../connect/LiveConnection.js';
 import { LiveChannel } from '../channel/LiveChannel.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { PhoenixSocketError } from 'src/socket/PhoenixSocketError.js';
+import { LiveSocketError } from 'src/socket/LiveSocketError.js';
 
 export function liveViewModel(topic: string) {
   // eslint-disable-next-line
@@ -30,7 +31,7 @@ export function liveViewModel(topic: string) {
         this._errorSubscription = this.connection
           .getErrorStream$(topic)
           .subscribe({
-            next: (error: PhoenixSocketError) => {
+            next: (error: LiveSocketError) => {
               if (this.constructor.prototype.__liveErrorHandler) {
                 this.constructor.prototype.__liveErrorHandler.call(this, error);
               }
