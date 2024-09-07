@@ -18,6 +18,8 @@ export {
 // connect
 export { LiveConnection, connect } from './connect/index.js';
 
+export { liveViewModel } from './decorators/index.js';
+
 export {
   // utils
   snakeToCamelCase,

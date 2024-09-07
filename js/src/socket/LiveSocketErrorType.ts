@@ -1,1 +1,5 @@
-export type LiveSocketErrorType = 'socket' | 'channel' | 'server';
+export type LiveSocketErrorType =
+  | 'socket'
+  | 'channel'
+  | 'channel-join'
+  | 'server';

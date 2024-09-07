@@ -1,8 +1,12 @@
 import * as xmlhttprequest from "xmlhttprequest";
 import WebSocket from "ws";
 
-// Patch XMLHttpRequest to emulate browser environment for longpoll
-globalThis.XMLHttpRequest = xmlhttprequest.XMLHttpRequest;
+declare global {
+  var XMLHttpRequest: typeof xmlhttprequest.XMLHttpRequest;
+  var WebSocket: typeof WebSocket;
+}
 
+// Patch XMLHttpRequest to emulate browser environment for longpoll
 // Patch WebSocket to emulate browser environment for websockets
-global.WebSocket = WebSocket;
+globalThis.XMLHttpRequest = xmlhttprequest.XMLHttpRequest;
+globalThis.WebSocket = WebSocket as any;
