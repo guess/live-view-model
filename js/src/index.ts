@@ -32,4 +32,7 @@ export type ViewModel = {
   leave: () => void;
 };
 
-export const join = (vm: unknown) => (vm as ViewModel).join();
+export const join = (vm: unknown, params?: object) =>
+  (vm as ViewModel).join(params);
+
+export const leave = (vm: unknown) => (vm as ViewModel).leave();

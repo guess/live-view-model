@@ -1,5 +1,11 @@
 import "./global.js";
-import { connect, join, liveViewModel, LiveConnection } from "live-view-model";
+import {
+  connect,
+  join,
+  leave,
+  liveViewModel,
+  LiveConnection,
+} from "live-view-model";
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");
@@ -22,6 +28,7 @@ const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
 join(lobby);
+setTimeout(() => leave(lobby), 1000);
 
 // const token = "foobar";
 // const connection = connect("ws://localhost:4000/lvm", { token });
