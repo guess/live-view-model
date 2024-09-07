@@ -26,7 +26,7 @@ export class LiveSocket {
     if (this.status === ConnectionStatus.disconnected) {
       this.setStatus(ConnectionStatus.connecting);
       this.socket.onError((event?: PhoenixSocketErrorEvent) =>
-        this.emitError(this.url, 'socket', event?.error)
+        this.emitError('socket', 'socket', event?.error)
       );
       this.socket.onOpen(() => {
         this.setStatus(ConnectionStatus.connected);
@@ -65,9 +65,9 @@ export class LiveSocket {
     // console.error(`error: ${type} error from topic: ${topic}`, error);
     this.emitEvent(topic, 'lvm-error', {
       type,
-      message: error?.message || 'Unknown error',
+      message: error?.message || error?.reason || 'Unknown error',
       code: error?.code,
-      error: error?.toString(),
+      error,
     });
   }
 
@@ -84,6 +84,6 @@ export class LiveSocket {
 
   private setStatus(status: ConnectionStatus): void {
     this.status = status;
-    this.emitEvent(this.url, 'lvm-connect', { status: this.status });
+    this.emitEvent('socket', 'lvm-connect', { status: this.status });
   }
 }

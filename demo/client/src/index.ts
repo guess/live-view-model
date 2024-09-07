@@ -1,5 +1,5 @@
 import "./global.js";
-import { connect, liveViewModel, LiveConnection } from "live-view-model";
+import { connect, join, liveViewModel, LiveConnection } from "live-view-model";
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");
@@ -16,11 +16,12 @@ class LobbyViewModel {
 }
 
 // Example of a failed connection:
-failedConnection();
+// failedConnection();
 
-const token = "foobar";
+const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
-// const lobby = new LobbyViewModel(conn);
+const lobby = new LobbyViewModel(conn);
+join(lobby);
 
 // const token = "foobar";
 // const connection = connect("ws://localhost:4000/lvm", { token });

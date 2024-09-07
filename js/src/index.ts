@@ -26,3 +26,10 @@ export {
   snakeToTitleCase,
 } from './utils/strings.js';
 export { isNotNull } from './utils/rxjs.js';
+
+export type ViewModel = {
+  join: (params?: object) => void;
+  leave: () => void;
+};
+
+export const join = (vm: unknown) => (vm as ViewModel).join();

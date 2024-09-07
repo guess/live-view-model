@@ -18,7 +18,7 @@ defmodule DemoWeb.Endpoint do
 
   socket("/lvm", DemoWeb.Socket,
     websocket: [check_origin: false],
-    longpoll: true
+    longpoll: false
   )
 
   # Serve at "/" the static files from "priv/static" directory.

@@ -1,7 +1,8 @@
 export type PhoenixSocketError = {
-  type: string;
-  message: string;
-  code: string;
+  type?: string;
+  message?: string;
+  reason?: string;
+  code?: string;
 };
 
 export type PhoenixSocketErrorEvent = {

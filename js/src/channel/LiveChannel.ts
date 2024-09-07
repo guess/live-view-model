@@ -7,6 +7,7 @@ import {
 } from '../socket/PhoenixSocketError.js';
 import { LiveSocketEventType } from '../socket/LiveSocketEventType.js';
 import { LiveSocketErrorType } from '../socket/LiveSocketErrorType.js';
+import { PhoenixChannelError } from './PhoenixChannelError.js';
 
 export type LiveChannelParams = {
   topic: string;
@@ -28,18 +29,16 @@ export class LiveChannel {
   join(): void {
     if (this.status === ConnectionStatus.disconnected) {
       this.setStatus(ConnectionStatus.connecting);
-      this.channel.onError((event: PhoenixSocketErrorEvent) =>
-        this.emitError('channel', event.error)
-      );
+      this.channel.onError((event?: PhoenixSocketErrorEvent) => {
+        this.emitError('channel', event?.error);
+      });
       this.channel
         .join()
-        .receive('ok', (resp: object) => {
-          console.debug('TODO: channel joined', resp);
+        .receive('ok', () => {
           this.setStatus(ConnectionStatus.connected);
         })
-        .receive('error', (event: PhoenixSocketErrorEvent) => {
-          console.debug('TODO: channel join error', event);
-          this.emitError('channel-join', event.error);
+        .receive('error', (error: PhoenixChannelError) => {
+          this.emitError('channel', error);
         });
       // this.channel.on('state:change', (state: LiveStateChange) =>
       //   this.handleChange(state)
@@ -52,7 +51,6 @@ export class LiveChannel {
         this.emitError('server', event.error);
       });
       this.channel.onClose(() => {
-        console.debug('TODO: channel closed');
         this.setStatus(ConnectionStatus.disconnected);
       });
     }
@@ -71,7 +69,7 @@ export class LiveChannel {
     this.socket.emitEvent(this.topic, event, payload);
   }
 
-  private emitError(type: LiveSocketErrorType, error: PhoenixSocketError) {
+  private emitError(type: LiveSocketErrorType, error?: PhoenixSocketError) {
     this.socket.emitError(this.topic, type, error);
   }
 
