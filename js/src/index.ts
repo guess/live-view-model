@@ -20,7 +20,15 @@ export {
 // connect
 export { LiveConnection, connect } from './connect/index.js';
 
-export { liveViewModel, liveEvent, liveError } from './decorators/index.js';
+export {
+  liveViewModel,
+  liveEvent,
+  liveError,
+  liveObservable,
+  initializeLiveObservables,
+  getLiveObservableProperties,
+  liveAction,
+} from './decorators/index.js';
 
 export {
   // utils

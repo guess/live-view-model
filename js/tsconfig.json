@@ -18,7 +18,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts", "eslint.config.js"]

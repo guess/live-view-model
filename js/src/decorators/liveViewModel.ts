@@ -1,7 +1,6 @@
 import { LiveConnection } from '../connect/LiveConnection.js';
 import { LiveChannel } from '../channel/LiveChannel.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { PhoenixSocketError } from 'src/socket/PhoenixSocketError.js';
 import { LiveSocketError } from 'src/socket/LiveSocketError.js';
 
 export function liveViewModel(topic: string) {
