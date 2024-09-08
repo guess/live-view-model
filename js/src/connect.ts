@@ -1,10 +1,14 @@
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { LiveChannel } from '../channel/LiveChannel.js';
-import { LiveSocket } from '../socket/LiveSocket.js';
-import { isNotNull } from '../utils/rxjs.js';
-import { LiveSocketErrorType } from '../socket/LiveSocketErrorType.js';
-import { LiveSocketError } from '../socket/LiveSocketError.js';
-import { PhoenixSocketError } from '../phoenix/PhoenixSocketError.js';
+import { LiveSocket, LiveSocketError, LiveSocketErrorType } from './socket.js';
+import { LiveChannel } from './channel.js';
+import { PhoenixSocketError } from './phoenix.js';
+import { isNotNull } from './utils/rxjs.js';
+
+export function connect(url: string, params: object = {}): LiveConnection {
+  const connection = new LiveConnection(url, params);
+  connection.connect();
+  return connection;
+}
 
 export class LiveConnection {
   private url: string;

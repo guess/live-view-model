@@ -1,21 +1,45 @@
-import { filter, map, Observable, Subject } from 'rxjs';
-import { PhoenixSocket } from '../phoenix/PhoenixSocket.js';
-import { LiveSocketEvent } from './LiveSocketEvent.js';
+import { Socket as PhoenixSocket } from '@guess/phoenix-js';
+import { Channel as PhoenixChannel } from '@guess/phoenix-js';
 import {
   PhoenixSocketError,
+  PhoenixSocketErrorEvent,
   phoenixSocketErrorKeys,
-} from '../phoenix/PhoenixSocketError.js';
-import { PhoenixSocketErrorEvent } from '../phoenix/PhoenixSocketErrorEvent.js';
-import { PhoenixChannel } from '../phoenix/PhoenixChannel.js';
-import { LiveSocketEventType } from './LiveSocketEventType.js';
-import { LiveSocketErrorType } from './LiveSocketErrorType.js';
-import { ConnectionStatus } from '../connect/ConnectionStatus.js';
-import { LiveSocketError } from './LiveSocketError.js';
+} from './phoenix.js';
+import { filter, map, Observable, Subject } from 'rxjs';
+
+// externally exposed errors
+export type LiveSocketError = {
+  type: string;
+  message: string;
+  code?: string;
+  error?: object;
+};
+
+export type LiveSocketErrorType = 'socket' | 'channel' | 'server';
+
+export type LiveSocketEvent = {
+  topic: string;
+  event: LiveSocketEventType;
+  payload?: object;
+};
+
+export type LiveSocketEventType =
+  | 'lvm-connect'
+  | 'lvm-error'
+  | 'lvm-patch'
+  | 'lvm-change'
+  | 'lvm-event';
+
+export enum LiveSocketStatus {
+  disconnected = 'disconnected',
+  connecting = 'connecting',
+  connected = 'connected',
+}
 
 export class LiveSocket {
   private socket: PhoenixSocket;
   private subject = new Subject<LiveSocketEvent>();
-  private status: ConnectionStatus = ConnectionStatus.disconnected;
+  private status: LiveSocketStatus = LiveSocketStatus.disconnected;
 
   constructor(
     public url: string,
@@ -25,16 +49,16 @@ export class LiveSocket {
   }
 
   connect(): void {
-    if (this.status === ConnectionStatus.disconnected) {
-      this.setStatus(ConnectionStatus.connecting);
+    if (this.status === LiveSocketStatus.disconnected) {
+      this.setStatus(LiveSocketStatus.connecting);
       this.socket.onError((event?: PhoenixSocketErrorEvent) =>
         this.emitError('socket', 'socket', event?.error)
       );
       this.socket.onOpen(() => {
-        this.setStatus(ConnectionStatus.connected);
+        this.setStatus(LiveSocketStatus.connected);
       });
       this.socket.onClose(() => {
-        this.setStatus(ConnectionStatus.disconnected);
+        this.setStatus(LiveSocketStatus.disconnected);
       });
       this.socket.connect();
     } else {
@@ -43,7 +67,7 @@ export class LiveSocket {
   }
 
   disconnect(): void {
-    if (this.status === ConnectionStatus.connected) {
+    if (this.status === LiveSocketStatus.connected) {
       this.socket.disconnect();
     } else {
       console.warn('socket not connected');
@@ -102,7 +126,7 @@ export class LiveSocket {
     );
   }
 
-  private setStatus(status: ConnectionStatus): void {
+  private setStatus(status: LiveSocketStatus): void {
     this.status = status;
     this.emitEvent('socket', 'lvm-connect', { status: this.status });
   }

@@ -1,20 +1,35 @@
-import { ConnectionStatus } from '../connect/ConnectionStatus.js';
-import { LiveSocket } from '../socket/LiveSocket.js';
-import { PhoenixChannel } from '../phoenix/PhoenixChannel.js';
-import { LiveSocketErrorType } from '../socket/LiveSocketErrorType.js';
-import { LiveSocketEventType } from '../socket/LiveSocketEventType.js';
-import { PhoenixChannelError } from '../phoenix/PhoenixChannelError.js';
-import { PhoenixSocketError } from 'src/phoenix/PhoenixSocketError.js';
-import { PhoenixSocketErrorEvent } from 'src/phoenix/PhoenixSocketErrorEvent.js';
+import {
+  PhoenixChannel,
+  PhoenixChannelError,
+  PhoenixSocketError,
+  PhoenixSocketErrorEvent,
+} from './phoenix.js';
+import {
+  LiveSocket,
+  LiveSocketErrorType,
+  LiveSocketEventType,
+} from './socket.js';
+import { LiveStateChange, LiveStatePatch } from './state.js';
+
+export enum LiveChannelStatus {
+  disconnected = 'disconnected',
+  connecting = 'connecting',
+  connected = 'connected',
+}
 
 export type LiveChannelParams = {
   topic: string;
   params?: object;
 };
 
+export type LiveChannelEvent = {
+  name: string;
+  detail?: object;
+};
+
 export class LiveChannel {
   private channel: PhoenixChannel;
-  private status: ConnectionStatus = ConnectionStatus.disconnected;
+  private status: LiveChannelStatus = LiveChannelStatus.disconnected;
 
   constructor(
     private socket: LiveSocket,
@@ -25,8 +40,8 @@ export class LiveChannel {
 
   /** connect to socket and join channel. will do nothing if already connected */
   join(): void {
-    if (this.status === ConnectionStatus.disconnected) {
-      this.setStatus(ConnectionStatus.connecting);
+    if (this.status === LiveChannelStatus.disconnected) {
+      this.setStatus(LiveChannelStatus.connecting);
       this.channel.onError((event?: PhoenixSocketErrorEvent) => {
         // console.log('channel error', event);
         this.emitError('channel', event?.error);
@@ -34,23 +49,23 @@ export class LiveChannel {
       this.channel
         .join()
         .receive('ok', () => {
-          this.setStatus(ConnectionStatus.connected);
+          this.setStatus(LiveChannelStatus.connected);
         })
         .receive('error', (error: PhoenixChannelError) => {
           this.emitError('channel', error);
         });
-      // this.channel.on('state:change', (state: LiveStateChange) =>
-      //   this.handleChange(state)
-      // );
-      // this.channel.on('state:patch', (patch: LiveStatePatch) =>
-      //   this.handlePatch(patch)
-      // );
+      this.channel.on('state:change', (state: LiveStateChange) => {
+        this.emitEvent('lvm-change', state);
+      });
+      this.channel.on('state:patch', (patch: LiveStatePatch) => {
+        this.emitEvent('lvm-patch', patch);
+      });
       this.channel.on('error', (event: PhoenixSocketErrorEvent) => {
         console.debug('TODO: server error', event);
         this.emitError('server', event.error);
       });
       this.channel.onClose(() => {
-        this.setStatus(ConnectionStatus.disconnected);
+        this.setStatus(LiveChannelStatus.disconnected);
       });
     }
   }
@@ -76,7 +91,7 @@ export class LiveChannel {
     this.socket.emitError(this.topic, type, error);
   }
 
-  private setStatus(status: ConnectionStatus): void {
+  private setStatus(status: LiveChannelStatus): void {
     this.status = status;
     this.emitEvent('lvm-connect', { status: this.status });
   }
