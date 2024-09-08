@@ -1,34 +1,36 @@
-import { LiveViewModel } from './LiveViewModel.js';
+import { LiveViewModel } from './view-model/liveViewModel.js';
 
-// socket
+// Phoenix
+export { PhoenixChannel } from './phoenix/PhoenixChannel.js';
+export { PhoenixChannelError } from './phoenix/PhoenixChannelError.js';
+export { PhoenixSocket } from './phoenix/PhoenixSocket.js';
+export { PhoenixSocketError } from './phoenix/PhoenixSocketError.js';
+
+// Socket
+export { LiveSocket } from './socket/LiveSocket.js';
+export { LiveSocketError } from './socket/LiveSocketError.js';
+export { LiveSocketErrorType } from './socket/LiveSocketErrorType.js';
+export { LiveSocketEvent } from './socket/LiveSocketEvent.js';
+export { LiveSocketEventType } from './socket/LiveSocketEventType.js';
+
+// Channel
+export { LiveChannel } from './channel/LiveChannel.js';
+export { LiveChannelEvent } from './channel/LiveChannelEvent.js';
+
+// Connect
+export { LiveConnection } from './connect/LiveConnection.js';
+export { connect } from './connect/connect.js';
+
+// Live View Model
+export { action } from './view-model/action.js';
+export { liveError } from './view-model/liveError.js';
+export { liveEvent } from './view-model/liveEvent.js';
+export { liveViewModel, LiveViewModel } from './view-model/liveViewModel.js';
 export {
-  LiveSocket,
-  LiveSocketEvent,
-  LiveSocketErrorType,
-  LiveSocketEventType,
-  PhoenixSocket,
-  PhoenixSocketError,
-} from './socket/index.js';
-
-// channel
-export {
-  LiveChannel,
-  LiveChannelEvent,
-  PhoenixChannel,
-} from './channel/index.js';
-
-// connect
-export { LiveConnection, connect } from './connect/index.js';
-
-export {
-  liveViewModel,
-  liveEvent,
-  liveError,
   liveObservable,
   initializeLiveObservables,
   getLiveObservableProperties,
-  liveAction,
-} from './decorators/index.js';
+} from './view-model/liveObservable.js';
 
 export {
   // utils
@@ -36,8 +38,6 @@ export {
   snakeToTitleCase,
 } from './utils/strings.js';
 export { isNotNull } from './utils/rxjs.js';
-
-export { LiveViewModel } from './LiveViewModel.js';
 
 export const join = (vm: unknown, params?: object) =>
   (vm as LiveViewModel).join(params);

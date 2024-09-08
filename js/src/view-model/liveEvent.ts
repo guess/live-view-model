@@ -1,4 +1,4 @@
-import { LiveViewModel } from 'src/LiveViewModel.js';
+import { LiveViewModel } from './liveViewModel.js';
 
 export function liveEvent(eventName: string) {
   return function (

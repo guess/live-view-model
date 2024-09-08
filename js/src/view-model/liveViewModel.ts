@@ -1,7 +1,15 @@
-import { LiveConnection } from '../connect/LiveConnection.js';
 import { LiveChannel } from '../channel/LiveChannel.js';
+import { LiveConnection } from '../connect/LiveConnection.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { LiveSocketError } from 'src/socket/LiveSocketError.js';
+import { LiveSocketError } from '../socket/LiveSocketError.js';
+
+export type LiveViewModel = {
+  topic: string;
+  join: (params?: object) => void;
+  leave: () => void;
+  channel: LiveChannel;
+  connection: LiveConnection;
+};
 
 export function liveViewModel(topic: string) {
   // eslint-disable-next-line

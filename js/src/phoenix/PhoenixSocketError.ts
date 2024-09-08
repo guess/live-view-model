@@ -6,8 +6,4 @@ export type PhoenixSocketError = {
   code?: string;
 };
 
-export type PhoenixSocketErrorEvent = {
-  error: PhoenixSocketError;
-};
-
 export const phoenixSocketErrorKeys = ['type', 'message', 'reason', 'code'];

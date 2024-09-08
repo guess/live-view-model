@@ -1,12 +1,12 @@
 import { filter, map, Observable, Subject } from 'rxjs';
-import { PhoenixSocket } from './PhoenixSocket.js';
+import { PhoenixSocket } from '../phoenix/PhoenixSocket.js';
 import { LiveSocketEvent } from './LiveSocketEvent.js';
 import {
   PhoenixSocketError,
-  PhoenixSocketErrorEvent,
   phoenixSocketErrorKeys,
-} from './PhoenixSocketError.js';
-import { PhoenixChannel } from '../channel/PhoenixChannel.js';
+} from '../phoenix/PhoenixSocketError.js';
+import { PhoenixSocketErrorEvent } from '../phoenix/PhoenixSocketErrorEvent.js';
+import { PhoenixChannel } from '../phoenix/PhoenixChannel.js';
 import { LiveSocketEventType } from './LiveSocketEventType.js';
 import { LiveSocketErrorType } from './LiveSocketErrorType.js';
 import { ConnectionStatus } from '../connect/ConnectionStatus.js';

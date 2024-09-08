@@ -12,17 +12,9 @@ import {
   liveObservable,
   initializeLiveObservables,
   getLiveObservableProperties,
-  liveAction,
-} from "live-view-model";
-import {
   action,
-  autorun,
-  configure,
-  observable,
-  reaction,
-  runInAction,
-} from "mobx";
-// import "reflect-metadata";
+} from "live-view-model";
+import { autorun, observable } from "mobx";
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");
@@ -50,7 +42,7 @@ class LobbyViewModel {
   @liveObservable()
   messages: string[] = [];
 
-  @liveAction()
+  @action()
   setCount(count: number) {
     this.count = count;
   }

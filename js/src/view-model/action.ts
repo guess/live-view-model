@@ -1,6 +1,6 @@
 import { runInAction } from 'mobx';
 
-export function liveAction() {
+export function action() {
   return function (
     _target: object,
     _propertyKey: string,

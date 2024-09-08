@@ -1,13 +1,11 @@
 import { ConnectionStatus } from '../connect/ConnectionStatus.js';
 import { LiveSocket } from '../socket/LiveSocket.js';
-import { PhoenixChannel } from './PhoenixChannel.js';
-import {
-  PhoenixSocketError,
-  PhoenixSocketErrorEvent,
-} from '../socket/PhoenixSocketError.js';
-import { LiveSocketEventType } from '../socket/LiveSocketEventType.js';
+import { PhoenixChannel } from '../phoenix/PhoenixChannel.js';
 import { LiveSocketErrorType } from '../socket/LiveSocketErrorType.js';
-import { PhoenixChannelError } from './PhoenixChannelError.js';
+import { LiveSocketEventType } from '../socket/LiveSocketEventType.js';
+import { PhoenixChannelError } from '../phoenix/PhoenixChannelError.js';
+import { PhoenixSocketError } from 'src/phoenix/PhoenixSocketError.js';
+import { PhoenixSocketErrorEvent } from 'src/phoenix/PhoenixSocketErrorEvent.js';
 
 export type LiveChannelParams = {
   topic: string;
