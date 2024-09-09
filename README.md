@@ -4,23 +4,30 @@ LiveViewModel is an Elixir library for building interactive web and mobile appli
 
 ## Table of Contents
 
-- [Key Features](#key-features)
-- [How It Works](#how-it-works)
-- [Server-Side Components](#server-side-components)
-- [Client-Side Components](#client-side-components)
-- [Use Cases](#use-cases)
-- [Getting Started](#getting-started)
-  - [Server-Side Setup](#server-side-setup)
-  - [Client-Side Setup](#client-side-setup)
+- [Key features](#key-features)
+- [How it works](#how-it-works)
+- [Server-side components](#server-side-components)
+- [Client-side components](#client-side-components)
+- [Use cases](#use-cases)
+- [Getting started](#getting-started)
+  - [Server setup](#server-side-setup)
+  - [Client setup](#client-side-setup)
 - [Decorators](#decorators)
-- [Advanced Features](#advanced-features)
+  - [@liveViewModel](#liveviewmodel)
+  - [@liveObservable](#liveobservable)
+  - [@localObservable](#localobservable)
+  - [@liveEvent](#liveevent)
+  - [@liveError](#liveerror)
+  - [@action](#action)
+  - [@computed](#computed)
+- [Advanced features](#advanced-features)
 - [Testing](#testing)
 - [Using with React](#using-with-react)
 - [Comparison to LiveView](#comparison-to-liveview)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Key Features
+## Key features
 
 - 🏛️ **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
 - 🎭 **Event-Driven Architecture**: Clients dispatch events to the server, which handles them and updates the state accordingly.
@@ -31,27 +38,27 @@ LiveViewModel is an Elixir library for building interactive web and mobile appli
 - 🔄 **Reactive Programming**: Utilizes RxJS for handling asynchronous events and state changes.
 - 🔍 **MobX Integration**: Leverages MobX for efficient client-side state management and reactivity.
 
-## How It Works
+## How it works
 
 1. Clients connect to the server using WebSocket or long-polling.
 2. Clients send events to the server using a defined protocol.
 3. The server processes events and updates the application state.
 4. Updated state is sent back to clients for rendering, either as full state updates or optimized patches.
 
-## Server-Side Components
+## Server-side components
 
 - `LiveViewModel.Channel`: A behavior module for creating Phoenix channels that handle LiveViewModel logic.
 - `LiveViewModel.Encoder`: A protocol for customizing how data is encoded before being sent to clients.
 - `LiveViewModel.Event`: A struct representing events that can be sent from the server to clients.
 - `LiveViewModel.MessageBuilder`: A module for creating state change and patch messages.
 
-## Client-Side Components
+## Client-side components
 
 - `LiveConnection`: Manages the connection to the server and provides methods for joining channels and sending events.
 - `LiveViewModel`: A decorator and base class for creating view models that sync with the server state.
 - Various decorators (`@liveObservable`, `@localObservable`, `@action`, `@computed`, `@liveEvent`, `@liveError`) for defining reactive properties and methods.
 
-## Use Cases
+## Use cases
 
 LiveViewModel is particularly well-suited for:
 - Real-time dashboards and monitoring applications
@@ -60,9 +67,9 @@ LiveViewModel is particularly well-suited for:
 - Single-page applications (SPAs) with complex state management needs
 - Any scenario where a unified backend can serve multiple client types (web, mobile, etc.)
 
-## Getting Started
+## Getting started
 
-### Server-Side Setup
+### Server setup
 
 1. Add LiveViewModel to your dependencies in `mix.exs`:
 
@@ -104,7 +111,7 @@ LiveViewModel is particularly well-suited for:
    end
    ```
 
-### Client-Side Setup
+### Client setup
 
 1. Install the npm package:
 
@@ -148,7 +155,9 @@ LiveViewModel is particularly well-suited for:
 
 ## Decorators
 
-### @liveViewModel(topic: string)
+### @liveViewModel
+
+`@liveViewModel(topic: string)`
 
 Sets up a class as a live view model, connecting it to a specific Phoenix channel.
 
@@ -164,7 +173,9 @@ class LobbyViewModel {
 - Creates a channel subscription based on the provided topic
 - Sets up event listeners for incoming messages
 
-### @liveObservable(serverKey?: string)
+### @liveObservable
+
+`@liveObservable(serverKey?: string)`
 
 Marks a property for synchronization with the server and integrates with MobX to create observable properties.
 
@@ -187,7 +198,9 @@ messages: ChatMessage[] = [];
   - `@liveObservable.deep`: Creates a deep observable
   - `@liveObservable.shallow`: Creates a shallow observable
 
-### @localObservable()
+### @localObservable
+
+`@localObservable()`
 
 Marks a property as a local observable, not synchronized with the server.
 
@@ -209,7 +222,9 @@ localReference: SomeType | null = null;
   - `@localObservable.deep`: Creates a deep observable
   - `@localObservable.shallow`: Creates a shallow observable
 
-### @liveEvent(eventName: string)
+### @liveEvent
+
+`@liveEvent(eventName: string)`
 
 Defines a method that sends events to the server when called.
 
@@ -227,6 +242,8 @@ notify(message: string) {
 
 ### @liveError
 
+`@liveError()`
+
 Specifies an error handler for the view model.
 
 **Usage:**
@@ -241,7 +258,9 @@ handleError(error: any) {
 - Sets up a central error handler for the view model
 - Called when channel errors occur
 
-### @action()
+### @action
+
+`@action()`
 
 Alias for MobX action decorator.
 
@@ -256,7 +275,9 @@ setCount(count: number) {
 **Functionality:**
 - Wraps the method in a MobX action for optimal performance when modifying observables
 
-### @computed()
+### @computed
+
+`@computed()`
 
 Alias for MobX computed decorator.
 
@@ -271,7 +292,7 @@ get messageCount() {
 **Functionality:**
 - Creates a MobX computed property, which is automatically updated when its dependencies change
 
-## Advanced Features
+## Advanced features
 
 - **Custom Encoders**: Implement the `LiveViewModel.Encoder` protocol to customize how data is serialized before being sent to clients.
 
