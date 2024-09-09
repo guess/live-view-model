@@ -1,5 +1,6 @@
 import { filter, map, Observable, Subject } from 'rxjs';
 import { PhoenixSocketError, phoenixSocketErrorKeys } from './phoenix.js';
+import { logger } from './utils/logger.js';
 
 export type LiveEvent = {
   topic: string;
@@ -30,7 +31,7 @@ export class LiveEventStream {
 
   push(topic: string, event: LiveEventType, payload?: object): void {
     if (event !== 'lvm-error') {
-      console.log(`event: ${event} from topic: ${topic}`, payload);
+      logger.log(`event: ${event} from topic: ${topic}`, payload);
     }
     this.subject.next({ topic, event, payload });
   }
@@ -50,7 +51,7 @@ export class LiveEventStream {
     if (hasExtraData(error)) {
       event.error = error;
     }
-    console.error(`error: ${type} error from topic: ${topic}`, event.message);
+    logger.error(`error: ${type} error from topic: ${topic}`, event.message);
     this.push(topic, 'lvm-error', event);
   }
 

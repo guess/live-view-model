@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { makeObservable, observable, runInAction } from 'mobx';
+import { makeObservable, runInAction } from 'mobx';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
@@ -15,6 +15,7 @@ import {
   createObservableDecorator,
   ObservableDecoratorMetadata,
 } from './decorators/observable.js';
+import { logger } from './utils/logger.js';
 
 const LIVE_OBSERVABLE_METADATA_KEY = Symbol('liveObservable');
 const LOCAL_OBSERVABLE_METADATA_KEY = Symbol('localObservable');
@@ -140,7 +141,7 @@ const subscribeToLiveObservableChanges = (
       for (const prop of liveObservableProps) {
         const serverKey = prop.serverKey || prop.propertyKey;
         if (serverKey in payload) {
-          console.log(
+          logger.log(
             `updating ${prop.propertyKey.toString()} to:`,
             payload[serverKey.toString()]
           );
@@ -188,7 +189,7 @@ export function liveEvent(eventName: string) {
     descriptor.value = function (this: LiveViewModel, ...args: any[]) {
       const payload = originalMethod.apply(this, args);
       if (this.channel) {
-        console.debug(`pushEvent: ${eventName}`, payload);
+        logger.debug(`pushEvent: ${eventName}`, payload);
         this.channel.pushEvent(eventName, payload);
       } else {
         this.connection.emitError(this.topic, 'channel', {

@@ -11,8 +11,12 @@ import {
   LiveError,
   action,
   localObservable,
+  setLogLevel,
+  LogLevel,
 } from "live-view-model";
-import { autorun, observable, computed } from "mobx";
+import { autorun, computed } from "mobx";
+
+setLogLevel(LogLevel.debug);
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");

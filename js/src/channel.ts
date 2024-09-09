@@ -7,6 +7,7 @@ import { Channel as PhoenixChannel } from '@guess/phoenix-js';
 import { LiveSocket } from './socket.js';
 import { LiveErrorType, LiveEventStream, LiveEventType } from './events.js';
 import { LiveStateChange, LiveStatePatch } from './state.js';
+import { logger } from './utils/logger.js';
 
 export enum LiveChannelStatus {
   disconnected = 'disconnected',
@@ -41,7 +42,7 @@ export class LiveChannel {
     if (this.status === LiveChannelStatus.disconnected) {
       this.setStatus(LiveChannelStatus.connecting);
       this.channel.onError((event?: PhoenixSocketErrorEvent) => {
-        // console.log('channel error', event);
+        // logger.log('channel error', event);
         this.emitError('channel', event?.error);
       });
       this.channel
@@ -59,7 +60,7 @@ export class LiveChannel {
         this.emitEvent('lvm-patch', patch);
       });
       this.channel.on('error', (event: PhoenixSocketErrorEvent) => {
-        console.debug('TODO: server error', event);
+        logger.debug('TODO: server error', event);
         this.emitError('server', event.error);
       });
       this.channel.onClose(() => {

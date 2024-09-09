@@ -3,6 +3,7 @@ import { Channel as PhoenixChannel } from '@guess/phoenix-js';
 import { PhoenixSocketErrorEvent } from './phoenix.js';
 import { Subject } from 'rxjs';
 import { LiveEvent, LiveEventStream } from './events.js';
+import { logger } from './utils/logger.js';
 
 export enum LiveSocketStatus {
   disconnected = 'disconnected',
@@ -37,7 +38,7 @@ export class LiveSocket {
       });
       this.socket.connect();
     } else {
-      console.warn('socket already connected');
+      logger.warn('socket already connected');
     }
   }
 
@@ -45,7 +46,7 @@ export class LiveSocket {
     if (this.status === LiveSocketStatus.connected) {
       this.socket.disconnect();
     } else {
-      console.warn('socket not connected');
+      logger.warn('socket not connected');
     }
   }
 

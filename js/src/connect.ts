@@ -11,6 +11,7 @@ import { LiveSocket } from './socket.js';
 import { LiveChannel } from './channel.js';
 import { PhoenixSocketError } from './phoenix.js';
 import { isNotNull } from './utils/rxjs.js';
+import { logger } from './utils/logger.js';
 
 export function connect(url: string, params: object = {}): LiveConnection {
   const connection = new LiveConnection(url, params);
@@ -31,11 +32,11 @@ export class LiveConnection {
   }
 
   connect() {
-    console.debug('connecting to socket...');
+    logger.debug('connecting to socket...');
     const socket = new LiveSocket(this.url, this.stream, {
       params: this.params || {},
       debugger: (kind: string, msg: string, data: unknown) => {
-        console.debug(`${kind}: ${msg}`, data);
+        logger.debug(`${kind}: ${msg}`, data);
       },
     });
     socket.connect();
@@ -43,7 +44,7 @@ export class LiveConnection {
   }
 
   disconnect() {
-    console.debug('disconnecting from socket...');
+    logger.debug('disconnecting from socket...');
     this.socket?.disconnect();
   }
 
