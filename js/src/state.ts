@@ -16,8 +16,8 @@ export type LiveStatePatch = {
 
 export class LiveState {
   private _data$: BehaviorSubject<LiveStateData>;
-  private _patchSubscription: Subscription;
-  private _changeSubscription: Subscription;
+  private _patchSubscription: Subscription | null = null;
+  private _changeSubscription: Subscription | null = null;
 
   constructor(
     private stream: LiveEventStream,
@@ -30,27 +30,35 @@ export class LiveState {
       version: initialVersion,
     });
 
-    this._changeSubscription = eventStream$(stream, topic, 'lvm-change')
+    this.start();
+  }
+
+  start() {
+    this._changeSubscription = eventStream$(
+      this.stream,
+      this.topic,
+      'lvm-change'
+    )
       .pipe(map((event) => event as LiveStateChange))
       .subscribe((event) => this.change(event));
 
-    this._patchSubscription = eventStream$(stream, topic, 'lvm-patch')
+    this._patchSubscription = eventStream$(this.stream, this.topic, 'lvm-patch')
       .pipe(
         map((event) => event as LiveStatePatch),
         map((event) => patch(this.data, event))
       )
       .subscribe((state) => {
         if (state) {
-          stream.push(topic, 'lvm-change', state);
+          this.stream.push(this.topic, 'lvm-change', state);
         } else {
-          stream.push(topic, 'lvm-refresh');
+          this.stream.push(this.topic, 'lvm-refresh');
         }
       });
   }
 
   dispose() {
-    this._patchSubscription.unsubscribe();
-    this._changeSubscription.unsubscribe();
+    this._patchSubscription?.unsubscribe();
+    this._changeSubscription?.unsubscribe();
   }
 
   get state$(): Observable<Record<string, unknown>> {
