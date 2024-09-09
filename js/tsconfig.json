@@ -7,7 +7,7 @@
     "target": "ESNext",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "types": ["@types/node"],
+    "types": ["@types/node", "jest"],
     "lib": ["ESNext"],
     "declaration": true,
     "declarationDir": "./lib/typescript",

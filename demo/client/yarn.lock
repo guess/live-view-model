@@ -443,7 +443,7 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-json-joy@^9.9.1:
+json-joy@9.9.1:
   version "9.9.1"
   resolved "https://registry.yarnpkg.com/json-joy/-/json-joy-9.9.1.tgz#add8f8bdf4f7066894f5ec4817a5a43066a3757f"
   integrity sha512-/d7th2nbQRBQ/nqTkBe6KjjvDciSwn9UICmndwk3Ed/Bk9AqkTRm4PnLVfXG4DKbT0rEY0nKnwE7NqZlqKE6kg==
@@ -486,7 +486,7 @@ klaw-sync@^6.0.0:
   version "0.1.6"
   dependencies:
     "@guess/phoenix-js" "git+https://github.com/guess/phoenix-js.git"
-    json-joy "^9.9.1"
+    json-joy "9.9.1"
     lodash "^4.17.21"
     mobx "^6.13.1"
     patch-package "^8.0.0"
