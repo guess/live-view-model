@@ -1,9 +1,9 @@
 import {
-  PhoenixChannel,
   PhoenixChannelError,
   PhoenixSocketError,
   PhoenixSocketErrorEvent,
 } from './phoenix.js';
+import { Channel as PhoenixChannel } from '@guess/phoenix-js';
 import { LiveSocket } from './socket.js';
 import { LiveErrorType, LiveEventStream, LiveEventType } from './events.js';
 import { LiveStateChange, LiveStatePatch } from './state.js';

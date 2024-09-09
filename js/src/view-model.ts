@@ -7,9 +7,7 @@ import {
   errorStream$,
   eventStream$,
   LiveError,
-  LiveEvent,
   LiveEventType,
-  topicStream$,
 } from './events.js';
 import { PhoenixSocketError } from './phoenix.js';
 import { LiveState } from './state.js';

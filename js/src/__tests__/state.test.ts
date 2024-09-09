@@ -1,4 +1,13 @@
-import { LiveStateData, LiveStatePatch, patch } from '../state.js';
+import { TestScheduler } from 'rxjs/testing';
+import { LiveEventStream } from '../events.js';
+import {
+  LiveState,
+  LiveStateChange,
+  LiveStateData,
+  LiveStatePatch,
+  patch,
+} from '../state.js';
+import { firstValueFrom, timeout } from 'rxjs';
 
 describe('patch function', () => {
   const initialState: LiveStateData = {
@@ -107,5 +116,69 @@ describe('patch function', () => {
 
     expect(result).not.toBe(initialState);
     expect(initialState.state.count).toBe(0);
+  });
+});
+
+describe('LiveState', () => {
+  let liveState: LiveState;
+
+  const initialState = {
+    count: 0,
+    name: 'John',
+    items: ['apple', 'banana'],
+  };
+  const initialVersion = 1;
+  const stream = new LiveEventStream();
+  const topic = 'foobar';
+
+  beforeEach(() => {
+    liveState = new LiveState(stream, topic, initialState, initialVersion);
+  });
+
+  it('should set initial state', () => {
+    expect(liveState.state).toEqual(initialState);
+    expect(liveState.version).toEqual(initialVersion);
+  });
+
+  it('should use defaults if initial state is not provided', () => {
+    liveState = new LiveState(stream, topic);
+    expect(liveState.state).toEqual({});
+    expect(liveState.version).toEqual(0);
+  });
+
+  it('should change state when receiving lvm-change event', () => {
+    const event: LiveStateChange = {
+      state: {
+        count: 5,
+        name: 'Jill',
+        items: ['apple', 'strawberry'],
+      },
+      version: 10,
+    };
+    stream.push(topic, 'lvm-change', event);
+    expect(liveState.state).toEqual(event.state);
+    expect(liveState.version).toEqual(event.version);
+  });
+
+  it('should change state when receiving lvm-patch event', async () => {
+    const event: LiveStatePatch = {
+      operations: [
+        { op: 'replace', path: '/count', value: 1 },
+        { op: 'replace', path: '/name', value: 'Jane' },
+      ],
+      version: 2,
+    };
+
+    stream.push(topic, 'lvm-patch', event);
+    await firstValueFrom(liveState.data$.pipe(timeout(1000)));
+
+    expect(liveState.data).toEqual({
+      state: {
+        count: 1,
+        name: 'Jane',
+        items: ['apple', 'banana'],
+      },
+      version: 2,
+    });
   });
 });

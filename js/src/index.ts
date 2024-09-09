@@ -1,9 +1,4 @@
-export {
-  PhoenixChannel,
-  PhoenixChannelError,
-  PhoenixSocket,
-  PhoenixSocketError,
-} from './phoenix.js';
+export { PhoenixChannelError, PhoenixSocketError } from './phoenix.js';
 
 export { LiveSocket } from './socket.js';
 
