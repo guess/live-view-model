@@ -12,7 +12,8 @@ export type LiveEventType =
   | 'lvm-error'
   | 'lvm-patch'
   | 'lvm-change'
-  | 'lvm-event';
+  | 'lvm-event'
+  | 'lvm-refresh';
 
 // externally exposed errors
 export type LiveError = {

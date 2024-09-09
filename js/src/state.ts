@@ -1,5 +1,6 @@
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
 import { Operation, applyPatch } from 'json-joy/lib/json-patch/index.js';
+import { eventStream$, LiveEventStream } from './events.js';
 
 export type LiveStateData = {
   state: Record<string, unknown>;
@@ -15,8 +16,12 @@ export type LiveStatePatch = {
 
 export class LiveState {
   private _data$: BehaviorSubject<LiveStateData>;
+  private _patchSubscription: Subscription;
+  private _changeSubscription: Subscription;
 
   constructor(
+    private stream: LiveEventStream,
+    private topic: string,
     initialState: Record<string, unknown> = {},
     initialVersion: number = 0
   ) {
@@ -24,6 +29,28 @@ export class LiveState {
       state: initialState,
       version: initialVersion,
     });
+
+    this._changeSubscription = eventStream$(stream, topic, 'lvm-change')
+      .pipe(map((event) => event as LiveStateChange))
+      .subscribe((event) => this.change(event));
+
+    this._patchSubscription = eventStream$(stream, topic, 'lvm-patch')
+      .pipe(
+        map((event) => event as LiveStatePatch),
+        map((event) => patch(this.data, event))
+      )
+      .subscribe((state) => {
+        if (state) {
+          stream.push(topic, 'lvm-change', state);
+        } else {
+          stream.push(topic, 'lvm-refresh');
+        }
+      });
+  }
+
+  dispose() {
+    this._patchSubscription.unsubscribe();
+    this._changeSubscription.unsubscribe();
   }
 
   get state$(): Observable<Record<string, unknown>> {

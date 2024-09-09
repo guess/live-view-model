@@ -1,17 +1,18 @@
 import 'reflect-metadata';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { BehaviorSubject, map, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
-import { LiveError } from './events.js';
-import { PhoenixSocketError } from './phoenix.js';
 import {
-  LiveState,
-  LiveStateChange,
-  LiveStateData,
-  LiveStatePatch,
-  patch,
-} from './state.js';
+  errorStream$,
+  eventStream$,
+  LiveError,
+  LiveEvent,
+  LiveEventType,
+  topicStream$,
+} from './events.js';
+import { PhoenixSocketError } from './phoenix.js';
+import { LiveState } from './state.js';
 
 export type LiveViewModel = {
   topic: string;
@@ -20,6 +21,8 @@ export type LiveViewModel = {
   get channel(): LiveChannel | null;
   connection: LiveConnection;
   liveState: LiveState;
+  events$(event: LiveEventType): Observable<object>;
+  get errors$(): Observable<LiveError>;
 };
 
 export function liveViewModel(topic: string) {
@@ -45,10 +48,10 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
-        this.liveState = new LiveState();
+        this.liveState = new LiveState(this.connection.stream, topic);
 
-        // State patches
-        subscribeToPatchState(this).forEach((subscription) =>
+        // Refresh if we get out of sync
+        subscribeToRefresh(this).forEach((subscription) =>
           this.addSubscription(subscription)
         );
 
@@ -56,6 +59,14 @@ export function liveViewModel(topic: string) {
         subscribeToErrors(this).forEach((subscription) =>
           this.addSubscription(subscription)
         );
+      }
+
+      events$(event: LiveEventType): Observable<object> {
+        return eventStream$(this.connection.stream, topic, event);
+      }
+
+      get errors$(): Observable<LiveError> {
+        return errorStream$(this.connection.stream, topic);
       }
 
       get subscriptions() {
@@ -77,6 +88,7 @@ export function liveViewModel(topic: string) {
         if (this.channel) {
           this.channel.leave();
         }
+        this.liveState.dispose();
         this._subscriptions.forEach((subscription) =>
           subscription.unsubscribe()
         );
@@ -94,8 +106,16 @@ export function liveViewModel(topic: string) {
   };
 }
 
+const subscribeToRefresh = (vm: LiveViewModel): Subscription[] => {
+  const subscription = vm.events$('lvm-refresh').subscribe(() => {
+    vm.channel?.pushEvent('lvm_refresh');
+  });
+
+  return [subscription];
+};
+
 const subscribeToErrors = (vm: LiveViewModel): Subscription[] => {
-  const subscription = vm.connection.getErrorStream$(vm.topic).subscribe({
+  const subscription = vm.errors$.subscribe({
     next: (error: LiveError) => {
       if (vm.constructor.prototype.__liveErrorHandler) {
         vm.constructor.prototype.__liveErrorHandler.call(this, error);
@@ -104,38 +124,6 @@ const subscribeToErrors = (vm: LiveViewModel): Subscription[] => {
   });
 
   return [subscription];
-};
-
-const subscribeToPatchState = (vm: LiveViewModel): Subscription[] => {
-  const subscriptions = [];
-
-  const emitOrRefresh = (state: LiveStateData | null) => {
-    if (state) {
-      vm.connection.emitEvent(vm.topic, 'lvm-change', state);
-    } else {
-      vm.channel?.pushEvent('lvm_refresh');
-    }
-  };
-
-  subscriptions.push(
-    vm.connection
-      .getEventStream$(vm.topic, 'lvm-patch')
-      .pipe(
-        map((event) => event as LiveStatePatch),
-        map((event) => patch(vm.liveState.data, event))
-      )
-      .subscribe((state) => emitOrRefresh(state))
-  );
-
-  // State changes
-  subscriptions.push(
-    vm.connection
-      .getEventStream$(vm.topic, 'lvm-change')
-      .pipe(map((event) => event as LiveStateChange))
-      .subscribe((event) => vm.liveState.change(event))
-  );
-
-  return subscriptions;
 };
 
 export const join = (vm: unknown, params?: object) =>
