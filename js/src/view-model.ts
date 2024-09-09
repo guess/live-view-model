@@ -51,6 +51,7 @@ export function liveViewModel(topic: string) {
         this.connection = connection!;
         this.liveState = new LiveState(this.connection.stream, topic);
         maybeSubscribeToErrors(this);
+        initializeLiveObservables(this);
       }
 
       events$(event: LiveEventType): Observable<object> {
@@ -176,6 +177,7 @@ export function liveEvent(eventName: string) {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
+    // eslint-disable-next-line
     descriptor.value = function (this: LiveViewModel, ...args: any[]) {
       const payload = originalMethod.apply(this, args);
       if (this.channel) {
@@ -218,7 +220,7 @@ export function liveObservable(serverKey?: string) {
     );
 
     // Define a getter/setter for the property
-    let value: any;
+    let value: unknown;
     Object.defineProperty(target, propertyKey, {
       get() {
         return value;
@@ -232,7 +234,9 @@ export function liveObservable(serverKey?: string) {
   };
 }
 
+// eslint-disable-next-line
 export function initializeLiveObservables(instance: any) {
+  // eslint-disable-next-line
   const observables: Record<string | symbol, any> = {};
   const metadata: LiveObservableMetadata[] =
     getLiveObservableProperties(instance);
@@ -279,6 +283,7 @@ export function action() {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
+    // eslint-disable-next-line
     descriptor.value = function (...args: any[]) {
       return runInAction(() => originalMethod.apply(this, args));
     };

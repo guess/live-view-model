@@ -28,3 +28,5 @@ export {
 } from './view-model.js';
 
 export { snakeToCamelCase, snakeToTitleCase } from './utils/strings.js';
+
+export { observable, computed } from 'mobx';

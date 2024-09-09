@@ -6,15 +6,12 @@ import {
   liveViewModel,
   LiveConnection,
   liveEvent,
-  PhoenixSocketError,
   liveError,
   liveObservable,
-  initializeLiveObservables,
-  getLiveObservableProperties,
-  action,
   LiveError,
+  action,
 } from "live-view-model";
-import { autorun, computed, observable } from "mobx";
+import { autorun, observable, computed } from "mobx";
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");
@@ -35,9 +32,7 @@ type ChatMessage = {
 
 @liveViewModel("room:lobby")
 class LobbyViewModel {
-  constructor(private conn: LiveConnection) {
-    initializeLiveObservables(this);
-  }
+  constructor(conn: LiveConnection) {}
 
   @observable
   count: number = 0;
