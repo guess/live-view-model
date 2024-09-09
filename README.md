@@ -4,14 +4,14 @@ LiveViewModel is an Elixir library for building interactive web and mobile appli
 
 ## Key Features
 
-- **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
-- **Event-Driven Architecture**: Clients dispatch events to the server, which handles them and updates the state accordingly.
-- **Real-Time Updates**: The server pushes state changes to clients, facilitating real-time interactivity.
-- **Simplified Client Logic**: Client-side code primarily focuses on rendering state and dispatching events.
-- **Platform Agnostic**: Suitable for web applications and mobile apps that manage their own UI rendering.
-- **TypeScript Support**: Includes TypeScript definitions for improved developer experience.
-- **Reactive Programming**: Utilizes RxJS for handling asynchronous events and state changes.
-- **MobX Integration**: Leverages MobX for efficient client-side state management and reactivity.
+- 🏛️ **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
+- 🎭 **Event-Driven Architecture**: Clients dispatch events to the server, which handles them and updates the state accordingly.
+- ⚡ **Real-Time Updates**: The server pushes state changes to clients, facilitating real-time interactivity.
+- 🧘 **Simplified Client Logic**: Client-side code primarily focuses on rendering state and dispatching events.
+- 🌐 **Platform Agnostic**: Suitable for web applications and mobile apps that manage their own UI rendering.
+- 🏷️ **TypeScript Support**: Includes TypeScript definitions for improved developer experience.
+- 🔄 **Reactive Programming**: Utilizes RxJS for handling asynchronous events and state changes.
+- 🔍 **MobX Integration**: Leverages MobX for efficient client-side state management and reactivity.
 
 ## How It Works
 
@@ -260,6 +260,56 @@ get messageCount() {
 ## Testing
 
 The library includes `LiveViewModel.TestHelpers` module for writing tests for your LiveViewModel channels.
+
+## Using with React
+
+LiveViewModel integrates seamlessly with React using mobx-react-lite for efficient rendering and state management. Here's an example of how to use LiveViewModel in a React component:
+
+1. First, install the necessary dependencies:
+
+```bash
+npm install live-view-model mobx mobx-react-lite react
+```
+
+2. Create your recat components:
+
+```tsx
+import React, { useMemo, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { connect, join, leave } from "live-view-model";
+
+const App = () => {
+  const conn = useMemo(() => {
+    return connect("ws://localhost:4000/socket");
+  }, []);
+
+  return (
+    <LobbyComponent conn={conn} />
+  );
+}
+
+const LobbyComponent = observer(({ conn }) => {
+  const vm = useMemo(() => {
+    return new LobbyViewModel(conn);
+  }, [conn]);
+
+  useEffect(() => {
+    join(vm);
+    return () => leave(vm);
+  }, [vm]);
+
+  return (
+    <div>
+      <h1>Lobby</h1>
+      <p>Count: {viewModel.count}</p>
+      <button onClick={() => viewModel.increment()}>Increment</button>
+      <button onClick={() => viewModel.decrement()}>Decrement</button>
+    </div>
+  );
+});
+
+export default App;
+```
 
 ## Comparison to LiveView
 
