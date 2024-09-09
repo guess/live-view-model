@@ -1,5 +1,7 @@
 # LiveViewModel
 
+🚧 **WORK IN PROGRESS**: This project is currently under active development. The API and features are subject to change. Use with caution in production environments. 🚧
+
 LiveViewModel is an Elixir library for building interactive web and mobile applications with a focus on real-time, event-driven architecture. It offers a unique approach to state management and client-server communication, particularly suited for applications that require real-time updates and don't rely on server-side HTML rendering.
 
 ## Table of Contents
@@ -13,7 +15,7 @@ LiveViewModel is an Elixir library for building interactive web and mobile appli
   - [Server setup](#server-side-setup)
   - [Client setup](#client-side-setup)
 - [Decorators](#decorators)
-  - [@liveViewModel](#liveviewmodel)
+  - [@liveViewModel](#liveviewmodel-1)
   - [@liveObservable](#liveobservable)
   - [@localObservable](#localobservable)
   - [@liveEvent](#liveevent)
