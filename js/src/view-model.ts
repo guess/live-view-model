@@ -46,13 +46,22 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
+
+        // TODO: If we get disconnecting this will stop working
         this.liveState = new LiveState(this.connection.stream, topic);
 
+        // TODO: If we get disconnecting this will stop working
+        subscribeToLiveObservableChanges(this).forEach((subscription) =>
+          this.addSubscription(subscription)
+        );
+
+        // TODO: If we get disconnecting this will stop working
         // Refresh if we get out of sync
         subscribeToRefresh(this).forEach((subscription) =>
           this.addSubscription(subscription)
         );
 
+        // TODO: If we get disconnecting this will stop working
         // Error subscription
         subscribeToErrors(this).forEach((subscription) =>
           this.addSubscription(subscription)
@@ -103,6 +112,30 @@ export function liveViewModel(topic: string) {
     };
   };
 }
+
+const subscribeToLiveObservableChanges = (
+  vm: LiveViewModel
+): Subscription[] => {
+  const liveObservableProps = getLiveObservableProperties(vm);
+
+  const subscription = vm.liveState.state$.subscribe((payload) => {
+    runInAction(() => {
+      for (const prop of liveObservableProps) {
+        const serverKey = prop.serverKey || prop.propertyKey;
+        if (serverKey in payload) {
+          console.log(
+            `updating ${prop.propertyKey.toString()} to:`,
+            payload[serverKey.toString()]
+          );
+          // eslint-disable-next-line
+          (vm as any)[prop.propertyKey] = payload[serverKey.toString()];
+        }
+      }
+    });
+  });
+
+  return [subscription];
+};
 
 const subscribeToRefresh = (vm: LiveViewModel): Subscription[] => {
   const subscription = vm.events$('lvm-refresh').subscribe(() => {
