@@ -4,7 +4,9 @@ LiveViewModel is an Elixir library for building interactive web and mobile appli
 
 ## 🚧 WORK IN PROGRESS
 
-This project is currently under active development. The API and features are subject to change. Use with caution in production environments.
+This project is currently under active development. The API and features are subject to change.
+
+**Use with caution in production environments.**
 
 ## Table of contents
 
