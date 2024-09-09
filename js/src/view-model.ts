@@ -3,7 +3,7 @@ import { makeObservable, observable, runInAction } from 'mobx';
 import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
-import { LiveSocketError } from './socket.js';
+import { LiveError } from './events.js';
 import { PhoenixSocketError } from './phoenix.js';
 import {
   LiveState,
@@ -96,7 +96,7 @@ export function liveViewModel(topic: string) {
 
 const subscribeToErrors = (vm: LiveViewModel): Subscription[] => {
   const subscription = vm.connection.getErrorStream$(vm.topic).subscribe({
-    next: (error: LiveSocketError) => {
+    next: (error: LiveError) => {
       if (vm.constructor.prototype.__liveErrorHandler) {
         vm.constructor.prototype.__liveErrorHandler.call(this, error);
       }

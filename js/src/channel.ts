@@ -4,11 +4,8 @@ import {
   PhoenixSocketError,
   PhoenixSocketErrorEvent,
 } from './phoenix.js';
-import {
-  LiveSocket,
-  LiveSocketErrorType,
-  LiveSocketEventType,
-} from './socket.js';
+import { LiveSocket } from './socket.js';
+import { LiveErrorType, LiveEventStream, LiveEventType } from './events.js';
 import { LiveStateChange, LiveStatePatch } from './state.js';
 
 export enum LiveChannelStatus {
@@ -33,6 +30,7 @@ export class LiveChannel {
 
   constructor(
     private socket: LiveSocket,
+    private stream: LiveEventStream,
     params: LiveChannelParams
   ) {
     this.channel = socket.channel(params.topic, params.params);
@@ -83,12 +81,12 @@ export class LiveChannel {
     this.channel.push(`lvm_evt:${eventName}`, payload);
   }
 
-  private emitEvent(event: LiveSocketEventType, payload?: object) {
-    this.socket.emitEvent(this.topic, event, payload);
+  private emitEvent(event: LiveEventType, payload?: object) {
+    this.stream.push(this.topic, event, payload);
   }
 
-  private emitError(type: LiveSocketErrorType, error?: PhoenixSocketError) {
-    this.socket.emitError(this.topic, type, error);
+  private emitError(type: LiveErrorType, error?: PhoenixSocketError) {
+    this.stream.pushError(this.topic, type, error);
   }
 
   private setStatus(status: LiveChannelStatus): void {

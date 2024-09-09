@@ -1,4 +1,3 @@
-import { LiveSocketError } from "../../../js/lib/typescript/socket/LiveSocketError.js";
 import "./global.js";
 import {
   connect,
@@ -13,6 +12,7 @@ import {
   initializeLiveObservables,
   getLiveObservableProperties,
   action,
+  LiveError,
 } from "live-view-model";
 import { autorun, observable } from "mobx";
 
@@ -53,7 +53,7 @@ class LobbyViewModel {
   }
 
   @liveError()
-  handleError(error: LiveSocketError) {
+  handleError(error: LiveError) {
     console.log("ERROR!!!", error);
   }
 }

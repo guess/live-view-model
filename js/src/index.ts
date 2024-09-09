@@ -5,13 +5,15 @@ export {
   PhoenixSocketError,
 } from './phoenix.js';
 
+export { LiveSocket } from './socket.js';
+
 export {
-  LiveSocket,
-  LiveSocketError,
-  LiveSocketErrorType,
-  LiveSocketEvent,
-  LiveSocketEventType,
-} from './socket.js';
+  LiveEventStream,
+  LiveError,
+  LiveErrorType,
+  LiveEvent,
+  LiveEventType,
+} from './events.js';
 
 export { LiveChannel, LiveChannelEvent } from './channel.js';
 

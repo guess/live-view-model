@@ -1,11 +1,13 @@
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import {
-  LiveSocket,
-  LiveSocketError,
-  LiveSocketErrorType,
-  LiveSocketEvent,
-  LiveSocketEventType,
-} from './socket.js';
+  errorStream$,
+  eventStream$,
+  LiveError,
+  LiveErrorType,
+  LiveEventStream,
+  LiveEventType,
+} from './events.js';
+import { LiveSocket } from './socket.js';
 import { LiveChannel } from './channel.js';
 import { PhoenixSocketError } from './phoenix.js';
 import { isNotNull } from './utils/rxjs.js';
@@ -20,15 +22,17 @@ export class LiveConnection {
   private url: string;
   private _socket$ = new BehaviorSubject<LiveSocket | null>(null);
   private params: object | null;
+  stream: LiveEventStream;
 
   constructor(url: string, params?: object) {
     this.url = url;
     this.params = params || null;
+    this.stream = new LiveEventStream();
   }
 
   connect() {
     console.debug('connecting to socket...');
-    const socket = new LiveSocket(this.url, {
+    const socket = new LiveSocket(this.url, this.stream, {
       params: this.params || {},
       debugger: (kind: string, msg: string, data: unknown) => {
         console.debug(`${kind}: ${msg}`, data);
@@ -46,7 +50,7 @@ export class LiveConnection {
   createChannel$(topic: string, params?: object): Observable<LiveChannel> {
     return this._socket$.pipe(
       filter(isNotNull),
-      map((socket) => new LiveChannel(socket, { topic, params }))
+      map((socket) => new LiveChannel(socket, this.stream, { topic, params }))
     );
   }
 
@@ -60,28 +64,21 @@ export class LiveConnection {
 
   emitError(
     topic: string,
-    type: LiveSocketErrorType,
+    type: LiveErrorType,
     error?: PhoenixSocketError
   ): void {
-    this.socket?.emitError(topic, type, {
-      type,
-      message: error?.message || error?.reason || 'Unknown error',
-      code: error?.code,
-    });
+    this.stream.pushError(topic, type, error);
   }
 
-  emitEvent(topic: string, event: LiveSocketEventType, payload?: object) {
-    return this.socket!.emitEvent(topic, event, payload);
+  emitEvent(topic: string, event: LiveEventType, payload?: object) {
+    return this.stream.push(topic, event, payload);
   }
 
-  getEventStream$(
-    topic: string,
-    event: LiveSocketEventType
-  ): Observable<object> {
-    return this.socket!.getEventStream$(topic, event);
+  getEventStream$(topic: string, event: LiveEventType): Observable<object> {
+    return eventStream$(this.stream, topic, event);
   }
 
-  getErrorStream$(topic: string): Observable<LiveSocketError> {
-    return this.socket!.getErrorStream$(topic);
+  getErrorStream$(topic: string): Observable<LiveError> {
+    return errorStream$(this.stream, topic);
   }
 }
