@@ -2,6 +2,24 @@
 
 LiveViewModel is an Elixir library for building interactive web and mobile applications with a focus on real-time, event-driven architecture. It offers a unique approach to state management and client-server communication, particularly suited for applications that require real-time updates and don't rely on server-side HTML rendering.
 
+## Table of Contents
+
+- [Key Features](#key-features)
+- [How It Works](#how-it-works)
+- [Server-Side Components](#server-side-components)
+- [Client-Side Components](#client-side-components)
+- [Use Cases](#use-cases)
+- [Getting Started](#getting-started)
+  - [Server-Side Setup](#server-side-setup)
+  - [Client-Side Setup](#client-side-setup)
+- [Decorators](#decorators)
+- [Advanced Features](#advanced-features)
+- [Testing](#testing)
+- [Using with React](#using-with-react)
+- [Comparison to LiveView](#comparison-to-liveview)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Key Features
 
 - 🏛️ **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
@@ -276,11 +294,11 @@ npm install live-view-model mobx mobx-react-lite react
 ```tsx
 import React, { useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { connect, join, leave } from "live-view-model";
+import { connect, join, leave } from 'live-view-model'';
 
 const App = () => {
   const conn = useMemo(() => {
-    return connect("ws://localhost:4000/socket");
+    return connect('ws://localhost:4000/socket');
   }, []);
 
   return (
