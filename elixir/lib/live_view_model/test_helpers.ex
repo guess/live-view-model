@@ -23,7 +23,7 @@ defmodule LiveViewModel.TestHelpers do
   """
   defmacro assert_state_patch(patch) do
     quote do
-      assert_push("state:patch", %{patch: unquote(patch)})
+      assert_push("state:patch", %{operations: unquote(patch)})
     end
   end
 end

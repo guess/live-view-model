@@ -1,5 +1,11 @@
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
-import { LiveSocket, LiveSocketError, LiveSocketErrorType } from './socket.js';
+import {
+  LiveSocket,
+  LiveSocketError,
+  LiveSocketErrorType,
+  LiveSocketEvent,
+  LiveSocketEventType,
+} from './socket.js';
 import { LiveChannel } from './channel.js';
 import { PhoenixSocketError } from './phoenix.js';
 import { isNotNull } from './utils/rxjs.js';
@@ -62,6 +68,17 @@ export class LiveConnection {
       message: error?.message || error?.reason || 'Unknown error',
       code: error?.code,
     });
+  }
+
+  emitEvent(topic: string, event: LiveSocketEventType, payload?: object) {
+    return this.socket!.emitEvent(topic, event, payload);
+  }
+
+  getEventStream$(
+    topic: string,
+    event: LiveSocketEventType
+  ): Observable<object> {
+    return this.socket!.getEventStream$(topic, event);
   }
 
   getErrorStream$(topic: string): Observable<LiveSocketError> {

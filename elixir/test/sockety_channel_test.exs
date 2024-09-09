@@ -32,7 +32,7 @@ defmodule LiveViewModel.SocketyChannelTest do
 
     assert_push("state:patch", %{
       version: 1,
-      patch: [%{op: "replace", path: "/foo", value: "altered bar"}]
+      operations: [%{op: "replace", path: "/foo", value: "altered bar"}]
     })
   end
 end

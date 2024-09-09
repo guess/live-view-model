@@ -232,7 +232,7 @@ defmodule LiveViewModel.Channel do
 
       defp push_json_patch(socket, current_state, new_state, version) do
         push(socket, "state:patch", %{
-          patch: Jsonpatch.diff(current_state, new_state),
+          operations: Jsonpatch.diff(current_state, new_state),
           version: version
         })
       end

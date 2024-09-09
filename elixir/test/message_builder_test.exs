@@ -6,7 +6,7 @@ defmodule LiveViewModel.Test.MessageBuilderTest do
   test "update_state_message" do
     assert {"state:patch",
             %{
-              patch: [%{op: "replace", path: "/foo", value: "baz"}],
+              operations: [%{op: "replace", path: "/foo", value: "baz"}],
               version: 1
             }} = MessageBuilder.update_state_message(%{foo: "bar"}, %{foo: "baz"}, 1)
   end
@@ -23,7 +23,7 @@ defmodule LiveViewModel.Test.MessageBuilderTest do
   test "update_state_message with datetime" do
     assert {"state:patch",
             %{
-              patch: [%{op: "replace", path: "/time", value: _value}],
+              operations: [%{op: "replace", path: "/time", value: _value}],
               version: 1
             }} =
              MessageBuilder.update_state_message(
@@ -36,7 +36,7 @@ defmodule LiveViewModel.Test.MessageBuilderTest do
   test "update_state_message with date" do
     assert {"state:patch",
             %{
-              patch: [%{op: "replace", path: "/date", value: _value}],
+              operations: [%{op: "replace", path: "/date", value: _value}],
               version: 1
             }} =
              MessageBuilder.update_state_message(

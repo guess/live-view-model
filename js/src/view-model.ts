@@ -1,17 +1,26 @@
 import 'reflect-metadata';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
 import { LiveSocketError } from './socket.js';
 import { PhoenixSocketError } from './phoenix.js';
+import {
+  LiveState,
+  LiveStateChange,
+  LiveStateData,
+  LiveStatePatch,
+  patch,
+} from './state.js';
+import { forEach } from 'lodash';
 
 export type LiveViewModel = {
   topic: string;
   join: (params?: object) => void;
   leave: () => void;
-  channel: LiveChannel;
+  channel: LiveChannel | null;
   connection: LiveConnection;
+  liveState: LiveState;
 };
 
 export function liveViewModel(topic: string) {
@@ -20,9 +29,10 @@ export function liveViewModel(topic: string) {
     return class extends constructor {
       topic = topic;
       connection: LiveConnection;
+      liveState: LiveState;
+
       _channel$ = new BehaviorSubject<LiveChannel | null>(null);
-      _subscription: Subscription | null = null;
-      _errorSubscription: Subscription | null = null;
+      _subscriptions: Subscription[] = [];
 
       // eslint-disable-next-line
       constructor(...args: any[]) {
@@ -36,48 +46,94 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
+        this.liveState = new LiveState();
 
-        // Set up the error subscription
-        this._errorSubscription = this.connection
-          .getErrorStream$(topic)
-          .subscribe({
-            next: (error: LiveSocketError) => {
-              if (this.constructor.prototype.__liveErrorHandler) {
-                this.constructor.prototype.__liveErrorHandler.call(this, error);
-              }
-            },
-          });
+        // State patches
+        subscribeToPatchState(this).forEach((subscription) =>
+          this.addSubscription(subscription)
+        );
+
+        // Error subscription
+        subscribeToErrors(this).forEach((subscription) =>
+          this.addSubscription(subscription)
+        );
       }
 
       public join(params?: object) {
-        this._subscription = this.connection
-          .createChannel$(topic, params)
-          .subscribe({
+        this.addSubscription(
+          this.connection.createChannel$(topic, params).subscribe({
             next: (channel) => {
               this._channel$.next(channel);
               channel.join();
             },
-          });
+          })
+        );
       }
 
       public leave() {
         if (this.channel) {
           this.channel.leave();
         }
-        if (this._subscription) {
-          this._subscription.unsubscribe();
-        }
-        if (this._errorSubscription) {
-          this._errorSubscription.unsubscribe();
-        }
+        this._subscriptions.forEach((subscription) =>
+          subscription.unsubscribe()
+        );
+        this._subscriptions = [];
       }
 
       get channel(): LiveChannel | null {
         return this._channel$.getValue();
       }
+
+      addSubscription(subscription: Subscription) {
+        this._subscriptions.push(subscription);
+      }
     };
   };
 }
+
+const subscribeToErrors = (vm: LiveViewModel): Subscription[] => {
+  const subscription = vm.connection.getErrorStream$(vm.topic).subscribe({
+    next: (error: LiveSocketError) => {
+      if (vm.constructor.prototype.__liveErrorHandler) {
+        vm.constructor.prototype.__liveErrorHandler.call(this, error);
+      }
+    },
+  });
+
+  return [subscription];
+};
+
+const subscribeToPatchState = (vm: LiveViewModel): Subscription[] => {
+  const subscriptions = [];
+
+  const emitOrRefresh = (state: LiveStateData | null) => {
+    if (state) {
+      vm.connection.emitEvent(vm.topic, 'lvm-change', state);
+    } else {
+      vm.channel?.pushEvent('lvm_refresh');
+    }
+  };
+
+  subscriptions.push(
+    vm.connection
+      .getEventStream$(vm.topic, 'lvm-patch')
+      .pipe(
+        map((event) => event as LiveStatePatch),
+        map((event) => patch(vm.liveState.data, event))
+      )
+      .subscribe((state) => emitOrRefresh(state))
+  );
+
+  // State changes
+  subscriptions.push(
+    vm.connection
+      .getEventStream$(vm.topic, 'lvm-change')
+      .pipe(map((event) => event as LiveStateChange))
+      .subscribe((event) => vm.liveState.change(event))
+  );
+
+  return subscriptions;
+};
 
 export const join = (vm: unknown, params?: object) =>
   (vm as LiveViewModel).join(params);

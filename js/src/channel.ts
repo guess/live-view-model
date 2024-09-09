@@ -79,7 +79,7 @@ export class LiveChannel {
     return this.channel.topic;
   }
 
-  pushEvent(eventName: string, payload: object): void {
+  pushEvent(eventName: string, payload?: object): void {
     this.channel.push(`lvm_evt:${eventName}`, payload);
   }
 

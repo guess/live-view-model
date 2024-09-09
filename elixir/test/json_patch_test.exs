@@ -33,7 +33,7 @@ defmodule LiveViewModel.JSONPatchTest do
     Enum.each(0..11, fn i -> push(socket, "lvm_evt:change_foo", %{"foo" => "bar #{i}"}) end)
 
     assert_push("state:patch", %{
-      patch: [%{op: "replace", path: "/foo", value: "bar 11"}],
+      operations: [%{op: "replace", path: "/foo", value: "bar 11"}],
       version: 1
     })
   end

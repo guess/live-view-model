@@ -30,7 +30,7 @@ defmodule LiveViewModel.SchemaChanneltest do
 
     assert_push("state:patch", %{
       version: 1,
-      patch: patches
+      operations: patches
     })
 
     paths = patches |> Enum.map(& &1.path)
