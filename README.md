@@ -68,8 +68,9 @@ LiveViewModel is particularly well-suited for:
      end
 
      @impl true
-     def handle_event("increment", _payload, state) do
-       {:noreply, %{state | count: state.count + 1}}
+     def handle_event("update_count", %{"value" => value}, state) do
+       new_count = state.count + value
+       {:noreply, %{state | count: new_count}}
      end
    end
    ```
@@ -106,9 +107,9 @@ LiveViewModel is particularly well-suited for:
      @liveObservable()
      count: number = 0;
 
-     @liveEvent("increment")
-     increment() {
-       // This will send an event to the server
+     @liveEvent("update_count")
+     updateCount(value: number) {
+       return { value };
      }
    }
    ```
@@ -122,15 +123,140 @@ LiveViewModel is particularly well-suited for:
    const viewModel = new MyViewModel(conn);
    join(viewModel);
 
-   // Now you can use viewModel.count and viewModel.increment()
+   autorun(() => console.log('Count changed:', viewModel.count));
+
+   viewModel.updateCount(5);
+   viewModel.updateCount(4);
    ```
+
+## Decorators
+
+### @liveViewModel(topic: string)
+
+Sets up a class as a live view model, connecting it to a specific Phoenix channel.
+
+**Usage:**
+```typescript
+@liveViewModel("room:lobby")
+class LobbyViewModel {
+  // ...
+}
+```
+
+**Functionality:**
+- Creates a channel subscription based on the provided topic
+- Sets up event listeners for incoming messages
+
+#### @liveObservable(serverKey?: string)
+
+Marks a property for synchronization with the server and integrates with MobX to create observable properties.
+
+**Usage:**
+```typescript
+@liveObservable("server_count")
+count: number = 0;
+
+@liveObservable.deep()
+messages: ChatMessage[] = [];
+```
+
+**Functionality:**
+- Makes the property a MobX observable
+- Maps the property to a server-side key (uses the property name if not specified)
+- Sets up the property for automatic updates when receiving data from the server
+- Provides variants for different MobX observable types:
+  - `@liveObservable.ref`: Creates a reference observable
+  - `@liveObservable.struct`: Creates a structural observable
+  - `@liveObservable.deep`: Creates a deep observable
+  - `@liveObservable.shallow`: Creates a shallow observable
+
+### @localObservable()
+
+Marks a property as a local observable, not synchronized with the server.
+
+**Usage:**
+```typescript
+@localObservable()
+localCount: number = 0;
+
+@localObservable.ref()
+localReference: SomeType | null = null;
+```
+
+**Functionality:**
+- Makes the property a MobX observable
+- Does not synchronize the property with the server
+- Provides variants for different MobX observable types:
+  - `@localObservable.ref`: Creates a reference observable
+  - `@localObservable.struct`: Creates a structural observable
+  - `@localObservable.deep`: Creates a deep observable
+  - `@localObservable.shallow`: Creates a shallow observable
+
+### @liveEvent(eventName: string)
+
+Defines a method that sends events to the server when called.
+
+**Usage:**
+```typescript
+@liveEvent("notify")
+notify(message: string) {
+  return { message };
+}
+```
+
+**Functionality:**
+- Wraps the original method
+- Sends the returned payload to the server using the specified event name
+
+#### @liveError
+
+Specifies an error handler for the view model.
+
+**Usage:**
+```typescript
+@liveError
+handleError(error: any) {
+  console.error("View model error:", error);
+}
+```
+
+**Functionality:**
+- Sets up a central error handler for the view model
+- Called when channel errors occur
+
+### @action()
+
+Alias for MobX action decorator.
+
+**Usage:**
+```typescript
+@action()
+setCount(count: number) {
+  this.count = count;
+}
+```
+
+**Functionality:**
+- Wraps the method in a MobX action for optimal performance when modifying observables
+
+### @computed()
+
+Alias for MobX computed decorator.
+
+**Usage:**
+```typescript
+@computed()
+get messageCount() {
+  return this.messages.length;
+}
+```
+
+**Functionality:**
+- Creates a MobX computed property, which is automatically updated when its dependencies change
 
 ## Advanced Features
 
 - **Custom Encoders**: Implement the `LiveViewModel.Encoder` protocol to customize how data is serialized before being sent to clients.
-- **Error Handling**: Use the `@liveError` decorator to handle errors from the server.
-- **Computed Properties**: Use the `@computed` decorator to define properties that automatically update based on other observable properties.
-- **Local State**: Use `@localObservable` for client-side-only state that doesn't sync with the server.
 
 ## Testing
 
