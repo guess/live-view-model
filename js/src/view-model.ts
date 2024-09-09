@@ -15,6 +15,7 @@ import {
   initializeLiveObservables,
 } from './decorators/observable.js';
 import { logger } from './utils/logger.js';
+import { set } from 'lodash';
 
 export type LiveViewModel = {
   topic: string;
@@ -27,6 +28,8 @@ export type LiveViewModel = {
   get errors$(): Observable<LiveError>;
   _subscriptions: Subscription[];
   _errorSubscription: Subscription | null;
+  pushEvent: (event: string, payload: object) => void;
+  setValueFromPath: <T = unknown>(path: string[], value: T) => T | null;
 };
 
 export function liveViewModel(topic: string) {
@@ -70,7 +73,7 @@ export function liveViewModel(topic: string) {
         return this._subscriptions || [];
       }
 
-      public join(params?: object) {
+      join = (params?: object) => {
         this.liveState.start();
 
         subscribeToLiveObservableChanges(this).forEach((subscription) =>
@@ -94,20 +97,59 @@ export function liveViewModel(topic: string) {
             },
           })
         );
-      }
+      };
 
-      public leave() {
+      leave = () => {
         this.channel?.leave();
         this.liveState.dispose();
         diposeSubscriptions(this);
-      }
+      };
+
+      pushEvent = (event: string, payload: object) => {
+        this.channel?.pushEvent(event, payload);
+      };
 
       get channel(): LiveChannel | null {
         return this._channel$.getValue();
       }
+
+      setValueFromPath = <T = unknown>(path: string[], value: T): T | null => {
+        return setFromPath(this, path, value);
+      };
     };
   };
 }
+
+const setFromPath = <T = unknown>(
+  vm: LiveViewModel,
+  path: string[],
+  value: T
+): T | null => {
+  const topLevelProp = path[0];
+  const restOfPath = path.slice(1);
+  let finalValue;
+
+  if (!topLevelProp) return null;
+
+  runInAction(() => {
+    if (restOfPath.length === 0) {
+      // If it's a top-level property, just set it directly
+      (vm as Record<string, unknown>)[topLevelProp] = value;
+      finalValue = value;
+    } else {
+      // For nested properties, create a new object
+      const currentValue = (vm as Record<string, unknown>)[topLevelProp];
+      if (typeof currentValue === 'object') {
+        const newValue = { ...currentValue };
+        set(newValue, restOfPath, value);
+        (vm as Record<string, unknown>)[topLevelProp] = newValue;
+        finalValue = newValue;
+      }
+    }
+  });
+
+  return finalValue || null;
+};
 
 const addSubscription = (vm: LiveViewModel, subscription: Subscription) => {
   vm._subscriptions.push(subscription);

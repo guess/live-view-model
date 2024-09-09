@@ -13,7 +13,7 @@ export function liveEvent(eventName: string) {
       const payload = originalMethod.apply(this, args);
       if (this.channel) {
         logger.debug(`pushEvent: ${eventName}`, payload);
-        this.channel.pushEvent(eventName, payload);
+        this.pushEvent(eventName, payload);
       } else {
         this.connection.emitError(this.topic, 'channel', {
           message: `Cannot send event "${eventName}": channel not initialized`,
