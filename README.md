@@ -82,7 +82,7 @@ LiveViewModel is particularly well-suited for:
    ```elixir
    defp deps do
      [
-       {:live_view_model, "~> 0.1.0"}
+       {:live_view_model, "~> 0.2.0"}
      ]
    end
    ```
