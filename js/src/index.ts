@@ -23,6 +23,7 @@ export {
   liveError,
   liveEvent,
   liveObservable,
+  localObservable,
   initializeLiveObservables,
   getLiveObservableProperties,
 } from './view-model.js';

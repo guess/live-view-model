@@ -10,6 +10,7 @@ import {
   liveObservable,
   LiveError,
   action,
+  localObservable,
 } from "live-view-model";
 import { autorun, observable, computed } from "mobx";
 
@@ -20,11 +21,6 @@ const failedConnection = () => {
   }, 1000);
 };
 
-// configure({
-//   enforceActions: "never",
-// });
-//
-
 type ChatMessage = {
   from: string;
   message: string;
@@ -34,13 +30,13 @@ type ChatMessage = {
 class LobbyViewModel {
   constructor(conn: LiveConnection) {}
 
-  @observable
+  @localObservable()
   count: number = 0;
 
   @liveObservable("username")
   name: string = "";
 
-  @liveObservable()
+  @liveObservable.deep()
   messages: ChatMessage[] = [];
 
   @action()
@@ -90,17 +86,21 @@ setTimeout(() => {
 }, 1000);
 
 setTimeout(() => {
+  lobby.setCount(3);
   lobby.sendMessage("goodbye");
 }, 2000);
 
 setTimeout(() => {
+  lobby.setCount(4);
   leave(lobby);
 }, 3000);
 
 setTimeout(() => {
+  lobby.setCount(5);
   join(lobby);
 }, 4000);
 
 setTimeout(() => {
+  lobby.setCount(6);
   lobby.sendMessage("hello again");
 }, 5000);

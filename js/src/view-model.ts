@@ -11,6 +11,13 @@ import {
 } from './events.js';
 import { PhoenixSocketError } from './phoenix.js';
 import { LiveState } from './state.js';
+import {
+  createObservableDecorator,
+  ObservableDecoratorMetadata,
+} from './decorators/observable.js';
+
+const LIVE_OBSERVABLE_METADATA_KEY = Symbol('liveObservable');
+const LOCAL_OBSERVABLE_METADATA_KEY = Symbol('localObservable');
 
 export type LiveViewModel = {
   topic: string;
@@ -194,56 +201,25 @@ export function liveEvent(eventName: string) {
   };
 }
 
-const LIVE_OBSERVABLE_METADATA_KEY = Symbol('liveObservable');
-
-interface LiveObservableMetadata {
-  propertyKey: string | symbol;
-  serverKey: string;
-}
-
-export function liveObservable(serverKey?: string) {
-  return function (target: object, propertyKey: string | symbol) {
-    // Store metadata for synchronization
-    const metadata: LiveObservableMetadata = {
-      propertyKey,
-      serverKey: serverKey || propertyKey.toString(),
-    };
-
-    const existingMetadata: LiveObservableMetadata[] =
-      Reflect.getMetadata(LIVE_OBSERVABLE_METADATA_KEY, target.constructor) ||
-      [];
-    existingMetadata.push(metadata);
-    Reflect.defineMetadata(
-      LIVE_OBSERVABLE_METADATA_KEY,
-      existingMetadata,
-      target.constructor
-    );
-
-    // Define a getter/setter for the property
-    let value: unknown;
-    Object.defineProperty(target, propertyKey, {
-      get() {
-        return value;
-      },
-      set(newValue) {
-        value = newValue;
-      },
-      enumerable: true,
-      configurable: true,
-    });
-  };
-}
+export const liveObservable = createObservableDecorator(
+  LIVE_OBSERVABLE_METADATA_KEY
+);
+export const localObservable = createObservableDecorator(
+  LOCAL_OBSERVABLE_METADATA_KEY
+);
 
 // eslint-disable-next-line
 export function initializeLiveObservables(instance: any) {
   // eslint-disable-next-line
   const observables: Record<string | symbol, any> = {};
-  const metadata: LiveObservableMetadata[] =
-    getLiveObservableProperties(instance);
+  const liveMetadata = getLiveObservableProperties(instance);
+  const localMetadata = getLocalObservableProperties(instance);
 
-  metadata.forEach(({ propertyKey }) => {
-    observables[propertyKey] = observable;
-  });
+  [...liveMetadata, ...localMetadata].forEach(
+    ({ propertyKey, observableType }) => {
+      observables[propertyKey] = observableType;
+    }
+  );
 
   makeObservable(instance, observables);
 }
@@ -251,9 +227,17 @@ export function initializeLiveObservables(instance: any) {
 // Utility function to get all live observable properties for a class
 export function getLiveObservableProperties(
   target: object
-): LiveObservableMetadata[] {
+): ObservableDecoratorMetadata[] {
   return (
     Reflect.getMetadata(LIVE_OBSERVABLE_METADATA_KEY, target.constructor) || []
+  );
+}
+
+export function getLocalObservableProperties(
+  target: object
+): ObservableDecoratorMetadata[] {
+  return (
+    Reflect.getMetadata(LOCAL_OBSERVABLE_METADATA_KEY, target.constructor) || []
   );
 }
 
