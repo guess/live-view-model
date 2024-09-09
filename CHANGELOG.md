@@ -3,11 +3,8 @@
 ## [Unreleased]
 
 ### ✨ Added
-- js: add `setValueFromPath` action in view model
-- js: add `pushEvent` to view model
 
 ### 🛠️ Changed
-- js: add `autoConnect` param to `connect` (default true)
 
 ### ⚰️ Deprecated
 
@@ -16,6 +13,15 @@
 ### 🐛 Fixed
 
 ### 🔒 Security
+
+## 0.2.1
+
+### ✨ Added
+- js: add `setValueFromPath` action in view model
+- js: add `pushEvent` to view model
+
+### 🛠️ Changed
+- js: add `autoConnect` param to `connect` (default true)
 
 ## 0.2.0 (2024-09-09)
 
