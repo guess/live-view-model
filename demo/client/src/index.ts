@@ -14,7 +14,7 @@ import {
   action,
   LiveError,
 } from "live-view-model";
-import { autorun, observable } from "mobx";
+import { autorun, computed, observable } from "mobx";
 
 const failedConnection = () => {
   const connection = connect("ws://localhost:4000/lvm");
@@ -26,6 +26,12 @@ const failedConnection = () => {
 // configure({
 //   enforceActions: "never",
 // });
+//
+
+type ChatMessage = {
+  from: string;
+  message: string;
+};
 
 @liveViewModel("room:lobby")
 class LobbyViewModel {
@@ -34,17 +40,22 @@ class LobbyViewModel {
   }
 
   @observable
-  localCount: number = 0;
-
-  @liveObservable("server_count")
   count: number = 0;
 
+  @liveObservable("username")
+  name: string = "";
+
   @liveObservable()
-  messages: string[] = [];
+  messages: ChatMessage[] = [];
 
   @action()
   setCount(count: number) {
     this.count = count;
+  }
+
+  @computed
+  get messageCount() {
+    return this.messages.length;
   }
 
   @liveEvent("send_message")
@@ -54,7 +65,7 @@ class LobbyViewModel {
 
   @liveError()
   handleError(error: LiveError) {
-    console.log("ERROR!!!", error);
+    console.error("LVM ERROR:", error);
   }
 }
 
@@ -65,29 +76,36 @@ const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
 join(lobby);
-lobby.sendMessage("Hello, world!");
 
-const observableProperties = getLiveObservableProperties(lobby);
-console.log(observableProperties);
-
+autorun(() => console.log("UPDATE: message count:", lobby.messageCount));
+autorun(() => console.log("UPDATE: name: ", lobby.name));
 autorun(() => {
-  console.log("---");
-  console.log("Update:");
-  console.log("count:", lobby.count);
-  console.log("foobar:", lobby.localCount);
-  console.log("---");
+  if (lobby.messages.length > 0) {
+    const message = lobby.messages[0];
+    console.log(`UPDATE: New message from ${message.from}:`, message.message);
+  }
 });
+autorun(() => console.log("UPDATE: local count:", lobby.count));
 
+lobby.sendMessage("hello!");
 lobby.setCount(1);
 
 setTimeout(() => {
   lobby.setCount(2);
-}, 50);
+}, 1000);
 
 setTimeout(() => {
-  lobby.setCount(3);
-}, 100);
+  lobby.sendMessage("goodbye");
+}, 2000);
 
-// setTimeout(() => {
-//   setTimeout(() => leave(lobby), 1000);
-// }, 2000);
+setTimeout(() => {
+  leave(lobby);
+}, 3000);
+
+setTimeout(() => {
+  join(lobby);
+}, 4000);
+
+setTimeout(() => {
+  lobby.sendMessage("hello again");
+}, 5000);

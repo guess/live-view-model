@@ -34,31 +34,43 @@ export class LiveState {
   }
 
   start() {
-    this._changeSubscription = eventStream$(
-      this.stream,
-      this.topic,
-      'lvm-change'
-    )
-      .pipe(map((event) => event as LiveStateChange))
-      .subscribe((event) => this.change(event));
-
-    this._patchSubscription = eventStream$(this.stream, this.topic, 'lvm-patch')
-      .pipe(
-        map((event) => event as LiveStatePatch),
-        map((event) => patch(this.data, event))
+    if (this.isDisposed()) {
+      this._changeSubscription = eventStream$(
+        this.stream,
+        this.topic,
+        'lvm-change'
       )
-      .subscribe((state) => {
-        if (state) {
-          this.stream.push(this.topic, 'lvm-change', state);
-        } else {
-          this.stream.push(this.topic, 'lvm-refresh');
-        }
-      });
+        .pipe(map((event) => event as LiveStateChange))
+        .subscribe((event) => this.change(event));
+
+      this._patchSubscription = eventStream$(
+        this.stream,
+        this.topic,
+        'lvm-patch'
+      )
+        .pipe(
+          map((event) => event as LiveStatePatch),
+          map((event) => patch(this.data, event))
+        )
+        .subscribe((state) => {
+          if (state) {
+            this.stream.push(this.topic, 'lvm-change', state);
+          } else {
+            this.stream.push(this.topic, 'lvm-refresh');
+          }
+        });
+    }
   }
 
   dispose() {
     this._patchSubscription?.unsubscribe();
     this._changeSubscription?.unsubscribe();
+    this._patchSubscription = null;
+    this._changeSubscription = null;
+  }
+
+  private isDisposed() {
+    return !this._changeSubscription && !this._patchSubscription;
   }
 
   get state$(): Observable<Record<string, unknown>> {

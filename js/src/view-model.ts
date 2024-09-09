@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
 import {
@@ -21,6 +21,8 @@ export type LiveViewModel = {
   liveState: LiveState;
   events$(event: LiveEventType): Observable<object>;
   get errors$(): Observable<LiveError>;
+  _subscriptions: Subscription[];
+  _errorSubscription: Subscription | null;
 };
 
 export function liveViewModel(topic: string) {
@@ -33,6 +35,7 @@ export function liveViewModel(topic: string) {
 
       _channel$ = new BehaviorSubject<LiveChannel | null>(null);
       _subscriptions: Subscription[] = [];
+      _errorSubscription: Subscription | null = null;
 
       // eslint-disable-next-line
       constructor(...args: any[]) {
@@ -46,26 +49,8 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
-
-        // TODO: If we get disconnecting this will stop working
         this.liveState = new LiveState(this.connection.stream, topic);
-
-        // TODO: If we get disconnecting this will stop working
-        subscribeToLiveObservableChanges(this).forEach((subscription) =>
-          this.addSubscription(subscription)
-        );
-
-        // TODO: If we get disconnecting this will stop working
-        // Refresh if we get out of sync
-        subscribeToRefresh(this).forEach((subscription) =>
-          this.addSubscription(subscription)
-        );
-
-        // TODO: If we get disconnecting this will stop working
-        // Error subscription
-        subscribeToErrors(this).forEach((subscription) =>
-          this.addSubscription(subscription)
-        );
+        maybeSubscribeToErrors(this);
       }
 
       events$(event: LiveEventType): Observable<object> {
@@ -81,7 +66,22 @@ export function liveViewModel(topic: string) {
       }
 
       public join(params?: object) {
-        this.addSubscription(
+        this.liveState.start();
+
+        subscribeToLiveObservableChanges(this).forEach((subscription) =>
+          addSubscription(this, subscription)
+        );
+
+        // Refresh if we get out of sync
+        subscribeToRefresh(this).forEach((subscription) =>
+          addSubscription(this, subscription)
+        );
+
+        // Error subscription
+        maybeSubscribeToErrors(this);
+
+        addSubscription(
+          this,
           this.connection.createChannel$(topic, params).subscribe({
             next: (channel) => {
               this._channel$.next(channel);
@@ -92,26 +92,35 @@ export function liveViewModel(topic: string) {
       }
 
       public leave() {
-        if (this.channel) {
-          this.channel.leave();
-        }
+        this.channel?.leave();
         this.liveState.dispose();
-        this._subscriptions.forEach((subscription) =>
-          subscription.unsubscribe()
-        );
-        this._subscriptions = [];
+        diposeSubscriptions(this);
       }
 
       get channel(): LiveChannel | null {
         return this._channel$.getValue();
       }
-
-      addSubscription(subscription: Subscription) {
-        this._subscriptions.push(subscription);
-      }
     };
   };
 }
+
+const addSubscription = (vm: LiveViewModel, subscription: Subscription) => {
+  vm._subscriptions.push(subscription);
+};
+
+const diposeSubscriptions = (vm: LiveViewModel) => {
+  vm._errorSubscription?.unsubscribe();
+  vm._subscriptions.forEach((subscription) => subscription.unsubscribe());
+
+  vm._errorSubscription = null;
+  vm._subscriptions = [];
+};
+
+const maybeSubscribeToErrors = (vm: LiveViewModel) => {
+  if (!vm._errorSubscription) {
+    vm._errorSubscription = subscribeToErrors(vm);
+  }
+};
 
 const subscribeToLiveObservableChanges = (
   vm: LiveViewModel
@@ -145,16 +154,14 @@ const subscribeToRefresh = (vm: LiveViewModel): Subscription[] => {
   return [subscription];
 };
 
-const subscribeToErrors = (vm: LiveViewModel): Subscription[] => {
-  const subscription = vm.errors$.subscribe({
+const subscribeToErrors = (vm: LiveViewModel): Subscription => {
+  return vm.errors$.subscribe({
     next: (error: LiveError) => {
       if (vm.constructor.prototype.__liveErrorHandler) {
         vm.constructor.prototype.__liveErrorHandler.call(this, error);
       }
     },
   });
-
-  return [subscription];
 };
 
 export const join = (vm: unknown, params?: object) =>

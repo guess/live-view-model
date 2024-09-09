@@ -14,12 +14,15 @@ defmodule DemoWeb.ChatChannel do
 
   @impl true
   def init(_channel, _payload, _socket) do
-    {:ok, %{messages: []}}
+    {:ok, %{username: "Steve", messages: []}}
   end
 
   @impl true
   def handle_event("send_message", %{"message" => message}, state) do
     IO.puts("Sending message: #{message}")
+    name = state.username
+    messages = [%{from: name, message: message} | state.messages]
+    state = %{state | messages: messages}
     {:noreply, state}
   end
 end
