@@ -69,8 +69,7 @@ LiveViewModel is particularly well-suited for:
 
      @impl true
      def handle_event("update_count", %{"value" => value}, state) do
-       new_count = state.count + value
-       {:noreply, %{state | count: new_count}}
+       {:noreply, %{state | count: value}}
      end
    end
    ```
@@ -147,7 +146,7 @@ class LobbyViewModel {
 - Creates a channel subscription based on the provided topic
 - Sets up event listeners for incoming messages
 
-#### @liveObservable(serverKey?: string)
+### @liveObservable(serverKey?: string)
 
 Marks a property for synchronization with the server and integrates with MobX to create observable properties.
 
@@ -208,7 +207,7 @@ notify(message: string) {
 - Wraps the original method
 - Sends the returned payload to the server using the specified event name
 
-#### @liveError
+### @liveError
 
 Specifies an error handler for the view model.
 
