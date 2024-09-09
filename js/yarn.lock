@@ -2478,16 +2478,13 @@ json-buffer@3.0.1:
   resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.1.tgz#9338802a30d3b6605fbe0613e094008ca8c05a13"
   integrity sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==
 
-json-joy@^16.23.1:
-  version "16.23.1"
-  resolved "https://registry.yarnpkg.com/json-joy/-/json-joy-16.23.1.tgz#d2bb3bf27109fd61f3925b05db633afc978e331a"
-  integrity sha512-81xDwbj8WzVkzfIuHyYDprmdRYVoVAaVuweGsTULsj2rxpfbEglL8f619mwWxQuGNozPiDdjWzJavASbFT69NQ==
+json-joy@9.9.1:
+  version "9.9.1"
+  resolved "https://registry.yarnpkg.com/json-joy/-/json-joy-9.9.1.tgz#add8f8bdf4f7066894f5ec4817a5a43066a3757f"
+  integrity sha512-/d7th2nbQRBQ/nqTkBe6KjjvDciSwn9UICmndwk3Ed/Bk9AqkTRm4PnLVfXG4DKbT0rEY0nKnwE7NqZlqKE6kg==
   dependencies:
     arg "^5.0.2"
     hyperdyperid "^1.2.0"
-    sonic-forest "^1.0.3"
-    thingies "^2.1.1"
-    tree-dump "^1.0.2"
 
 json-parse-even-better-errors@^2.3.0:
   version "2.3.1"
@@ -3153,13 +3150,6 @@ slash@^4.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
-sonic-forest@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/sonic-forest/-/sonic-forest-1.0.3.tgz#81363af60017daba39b794fce24627dc412563cb"
-  integrity sha512-dtwajos6IWMEWXdEbW1IkEkyL2gztCAgDplRIX+OT5aRKnEd5e7r7YCxRgXZdhRP1FBdOBf8axeTPhzDv8T4wQ==
-  dependencies:
-    tree-dump "^1.0.0"
-
 source-map-support@0.5.13:
   version "0.5.13"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.13.tgz#31b24a9c2e73c2de85066c0feb7d44767ed52932"
@@ -3305,11 +3295,6 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-thingies@^2.1.1:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/thingies/-/thingies-2.4.0.tgz#e9787fdab30120d43809f6112d82d6d28daaaa46"
-  integrity sha512-Hzz6sX6asv1+JSc2pwQ/MGHRwYzms62lT3mADJfNCl9duAW09C1EyNw6jZUeTk1q6imSsCL3dr0Ee4ohR1iF4Q==
-
 tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
@@ -3333,11 +3318,6 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
-
-tree-dump@^1.0.0, tree-dump@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/tree-dump/-/tree-dump-1.0.2.tgz#c460d5921caeb197bde71d0e9a7b479848c5b8ac"
-  integrity sha512-dpev9ABuLWdEubk+cIaI9cHwRNNDjkBBLXTwI4UCUFdQ5xXKqNXoK4FEciw/vxf+NQ7Cb7sGUyeUtORvHIdRXQ==
 
 trim-newlines@^4.0.2:
   version "4.1.1"

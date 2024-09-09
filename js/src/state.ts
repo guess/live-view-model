@@ -1,6 +1,5 @@
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { Operation } from 'json-joy';
-// import { applyPatch } from 'json-joy/lib/json-patch/index.js';
+import { Operation, applyPatch } from 'json-joy/lib/json-patch/index.js';
 
 export type LiveStateData = {
   state: Record<string, unknown>;
@@ -62,11 +61,10 @@ export const patch = (
 ): LiveStateData | null => {
   const { state, version } = data;
   if (versionMatches(patch.version, version)) {
-    // const { doc } = applyPatch(state, patch.operations, { mutate: false });
+    const { doc } = applyPatch(state, patch.operations, { mutate: false });
     return {
       version: patch.version,
-      state: {},
-      // state: doc as Record<string, unknown>,
+      state: doc as Record<string, unknown>,
     };
   } else {
     return null;

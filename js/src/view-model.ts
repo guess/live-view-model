@@ -12,13 +12,12 @@ import {
   LiveStatePatch,
   patch,
 } from './state.js';
-import { forEach } from 'lodash';
 
 export type LiveViewModel = {
   topic: string;
   join: (params?: object) => void;
   leave: () => void;
-  channel: LiveChannel | null;
+  get channel(): LiveChannel | null;
   connection: LiveConnection;
   liveState: LiveState;
 };
@@ -57,6 +56,10 @@ export function liveViewModel(topic: string) {
         subscribeToErrors(this).forEach((subscription) =>
           this.addSubscription(subscription)
         );
+      }
+
+      get subscriptions() {
+        return this._subscriptions || [];
       }
 
       public join(params?: object) {
