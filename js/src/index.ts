@@ -18,6 +18,7 @@ export {
   join,
   leave,
   action,
+  computed,
   liveError,
   liveEvent,
   liveObservable,

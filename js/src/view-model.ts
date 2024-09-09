@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { makeObservable, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { LiveChannel } from './channel.js';
 import { LiveConnection } from './connect.js';
@@ -9,16 +9,12 @@ import {
   LiveError,
   LiveEventType,
 } from './events.js';
-import { PhoenixSocketError } from './phoenix.js';
 import { LiveState } from './state.js';
 import {
-  createObservableDecorator,
-  ObservableDecoratorMetadata,
+  getLiveObservableProperties,
+  initializeLiveObservables,
 } from './decorators/observable.js';
 import { logger } from './utils/logger.js';
-
-const LIVE_OBSERVABLE_METADATA_KEY = Symbol('liveObservable');
-const LOCAL_OBSERVABLE_METADATA_KEY = Symbol('localObservable');
 
 export type LiveViewModel = {
   topic: string;
@@ -178,101 +174,8 @@ export const join = (vm: unknown, params?: object) =>
 
 export const leave = (vm: unknown) => (vm as LiveViewModel).leave();
 
-export function liveEvent(eventName: string) {
-  return function (
-    _target: object,
-    _propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    // eslint-disable-next-line
-    descriptor.value = function (this: LiveViewModel, ...args: any[]) {
-      const payload = originalMethod.apply(this, args);
-      if (this.channel) {
-        logger.debug(`pushEvent: ${eventName}`, payload);
-        this.channel.pushEvent(eventName, payload);
-      } else {
-        this.connection.emitError(this.topic, 'channel', {
-          message: `Cannot send event "${eventName}": channel not initialized`,
-        });
-      }
-      return payload;
-    };
-    return descriptor;
-  };
-}
-
-export const liveObservable = createObservableDecorator(
-  LIVE_OBSERVABLE_METADATA_KEY
-);
-export const localObservable = createObservableDecorator(
-  LOCAL_OBSERVABLE_METADATA_KEY
-);
-
-// eslint-disable-next-line
-export function initializeLiveObservables(instance: any) {
-  // eslint-disable-next-line
-  const observables: Record<string | symbol, any> = {};
-  const liveMetadata = getLiveObservableProperties(instance);
-  const localMetadata = getLocalObservableProperties(instance);
-
-  [...liveMetadata, ...localMetadata].forEach(
-    ({ propertyKey, observableType }) => {
-      observables[propertyKey] = observableType;
-    }
-  );
-
-  makeObservable(instance, observables);
-}
-
-// Utility function to get all live observable properties for a class
-export function getLiveObservableProperties(
-  target: object
-): ObservableDecoratorMetadata[] {
-  return (
-    Reflect.getMetadata(LIVE_OBSERVABLE_METADATA_KEY, target.constructor) || []
-  );
-}
-
-export function getLocalObservableProperties(
-  target: object
-): ObservableDecoratorMetadata[] {
-  return (
-    Reflect.getMetadata(LOCAL_OBSERVABLE_METADATA_KEY, target.constructor) || []
-  );
-}
-
-export function liveError() {
-  return function (
-    target: object,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-
-    // Store the error handler on the prototype
-    target.constructor.prototype.__liveErrorHandler = function (
-      error: PhoenixSocketError
-    ) {
-      originalMethod.call(this, error);
-    };
-
-    return descriptor;
-  };
-}
-
-export function action() {
-  return function (
-    _target: object,
-    _propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    // eslint-disable-next-line
-    descriptor.value = function (...args: any[]) {
-      return runInAction(() => originalMethod.apply(this, args));
-    };
-
-    return descriptor;
-  };
-}
+export { liveError } from './decorators/error.js';
+export { liveEvent } from './decorators/event.js';
+export { action } from './decorators/action.js';
+export { computed } from './decorators/computed.js';
+export { liveObservable, localObservable } from './decorators/observable.js';

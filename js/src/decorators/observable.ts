@@ -1,9 +1,12 @@
-import { observable } from 'mobx';
+import { observable, makeObservable } from 'mobx';
 import { Annotation } from 'mobx/dist/internal.js';
 import {
   ClassAccessorDecorator,
   ClassFieldDecorator,
 } from 'mobx/dist/types/decorator_fills.js';
+
+const LIVE_OBSERVABLE_METADATA_KEY = Symbol('liveObservable');
+const LOCAL_OBSERVABLE_METADATA_KEY = Symbol('localObservable');
 
 export type ObservableType = Annotation &
   PropertyDecorator &
@@ -65,4 +68,44 @@ export function createObservableDecorator(
   });
 
   return decorator;
+}
+
+export const liveObservable = createObservableDecorator(
+  LIVE_OBSERVABLE_METADATA_KEY
+);
+export const localObservable = createObservableDecorator(
+  LOCAL_OBSERVABLE_METADATA_KEY
+);
+
+// eslint-disable-next-line
+export function initializeLiveObservables(instance: any) {
+  // eslint-disable-next-line
+  const observables: Record<string | symbol, any> = {};
+  const liveMetadata = getLiveObservableProperties(instance);
+  const localMetadata = getLocalObservableProperties(instance);
+
+  [...liveMetadata, ...localMetadata].forEach(
+    ({ propertyKey, observableType }) => {
+      observables[propertyKey] = observableType;
+    }
+  );
+
+  makeObservable(instance, observables);
+}
+
+// Utility function to get all live observable properties for a class
+export function getLiveObservableProperties(
+  target: object
+): ObservableDecoratorMetadata[] {
+  return (
+    Reflect.getMetadata(LIVE_OBSERVABLE_METADATA_KEY, target.constructor) || []
+  );
+}
+
+export function getLocalObservableProperties(
+  target: object
+): ObservableDecoratorMetadata[] {
+  return (
+    Reflect.getMetadata(LOCAL_OBSERVABLE_METADATA_KEY, target.constructor) || []
+  );
 }

@@ -10,11 +10,12 @@ import {
   liveObservable,
   LiveError,
   action,
+  computed,
   localObservable,
   setLogLevel,
   LogLevel,
 } from "live-view-model";
-import { autorun, computed } from "mobx";
+import { autorun } from "mobx";
 
 setLogLevel(LogLevel.debug);
 
@@ -48,7 +49,7 @@ class LobbyViewModel {
     this.count = count;
   }
 
-  @computed
+  @computed()
   get messageCount() {
     return this.messages.length;
   }
