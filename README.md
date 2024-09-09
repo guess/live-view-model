@@ -10,10 +10,26 @@ This project is currently under active development. The API and features are sub
 
 **Use with caution in production environments.**
 
+## Key features
+
+- 🏛️ **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
+- 🎭 **Event-Driven Architecture**: Clients dispatch events to the server, which handles them and updates the state accordingly.
+- ⚡ **Real-Time Updates**: The server pushes state changes to clients, facilitating real-time interactivity.
+- 🧘 **Simplified Client Logic**: Client-side code primarily focuses on rendering state and dispatching events.
+- 🌐 **Platform Agnostic**: Suitable for web applications and mobile apps that manage their own UI rendering.
+- 🏷️ **TypeScript Support**: Includes TypeScript definitions for improved developer experience.
+- 🔄 **Reactive Programming**: Utilizes RxJS for handling asynchronous events and state changes.
+- 🔍 **MobX Integration**: Leverages MobX for efficient client-side state management and reactivity.
+
+## How it works
+
+1. Clients connect to the server using WebSocket or long-polling.
+2. Clients send events to the server using a defined protocol.
+3. The server processes events and updates the application state.
+4. Updated state is sent back to clients for rendering, either as full state updates or optimized patches.
+
 ## Table of contents
 
-- [Key features](#key-features)
-- [How it works](#how-it-works)
 - [Server-side components](#server-side-components)
 - [Client-side components](#client-side-components)
 - [Use cases](#use-cases)
@@ -34,24 +50,6 @@ This project is currently under active development. The API and features are sub
 - [Comparison to LiveView](#comparison-to-liveview)
 - [Contributing](#contributing)
 - [License](#license)
-
-## Key features
-
-- 🏛️ **Centralized State Management**: Application state is maintained on the server, reducing complexity in state synchronization.
-- 🎭 **Event-Driven Architecture**: Clients dispatch events to the server, which handles them and updates the state accordingly.
-- ⚡ **Real-Time Updates**: The server pushes state changes to clients, facilitating real-time interactivity.
-- 🧘 **Simplified Client Logic**: Client-side code primarily focuses on rendering state and dispatching events.
-- 🌐 **Platform Agnostic**: Suitable for web applications and mobile apps that manage their own UI rendering.
-- 🏷️ **TypeScript Support**: Includes TypeScript definitions for improved developer experience.
-- 🔄 **Reactive Programming**: Utilizes RxJS for handling asynchronous events and state changes.
-- 🔍 **MobX Integration**: Leverages MobX for efficient client-side state management and reactivity.
-
-## How it works
-
-1. Clients connect to the server using WebSocket or long-polling.
-2. Clients send events to the server using a defined protocol.
-3. The server processes events and updates the application state.
-4. Updated state is sent back to clients for rendering, either as full state updates or optimized patches.
 
 ## Server-side components
 
