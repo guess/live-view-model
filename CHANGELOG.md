@@ -5,6 +5,7 @@
 ### ✨ Added
 
 ### 🛠️ Changed
+- js: add `autoConnect` param to `connect` (default true)
 
 ### ⚰️ Deprecated
 

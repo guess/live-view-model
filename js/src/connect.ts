@@ -13,9 +13,13 @@ import { PhoenixSocketError } from './phoenix.js';
 import { isNotNull } from './utils/rxjs.js';
 import { logger } from './utils/logger.js';
 
-export function connect(url: string, params: object = {}): LiveConnection {
+export function connect(
+  url: string,
+  params: object = {},
+  autoConnect = true
+): LiveConnection {
   const connection = new LiveConnection(url, params);
-  connection.connect();
+  if (autoConnect) connection.connect();
   return connection;
 }
 
