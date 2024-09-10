@@ -16,6 +16,7 @@ import {
   LogLevel,
   onJoin,
   onLeave,
+  LiveViewModel,
 } from "live-view-model";
 import { autorun } from "mobx";
 
@@ -33,9 +34,11 @@ type ChatMessage = {
   message: string;
 };
 
+interface LobbyViewModel extends LiveViewModel {}
+
 @liveViewModel("room:lobby")
 class LobbyViewModel {
-  constructor(conn: LiveConnection) {}
+  constructor(_conn: LiveConnection) {}
 
   @localObservable()
   count: number = 0;
@@ -68,12 +71,12 @@ class LobbyViewModel {
 
   @onJoin()
   handleJoin() {
-    console.log("onJoin: JOINED!!!");
+    console.log("onJoin called", this.topic);
   }
 
   @onLeave()
   handleLeave() {
-    console.log("onLeave: LEFT!!");
+    console.log("onLeave called", this.topic);
   }
 }
 
@@ -84,6 +87,8 @@ const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
 join(lobby);
+
+console.log("topic:", lobby.topic);
 
 autorun(() => console.log("UPDATE: message count:", lobby.messageCount));
 autorun(() => console.log("UPDATE: name: ", lobby.name));

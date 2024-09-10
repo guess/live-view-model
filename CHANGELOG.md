@@ -14,6 +14,11 @@
 
 ### 🔒 Security
 
+## 0.2.3
+
+### 🐛 Fixed
+- js: fix `this` not working in `onJoin` and `onLeave`
+
 ## 0.2.2
 
 ### ✨ Added

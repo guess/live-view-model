@@ -5,9 +5,7 @@ export function onJoin() {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
-    target.constructor.prototype.__onJoinHandler = function () {
-      originalMethod.call(this);
-    };
+    target.constructor.prototype.__onJoinHandler = originalMethod;
     return descriptor;
   };
 }
@@ -19,9 +17,7 @@ export function onLeave() {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
-    target.constructor.prototype.__onLeaveHandler = function () {
-      originalMethod.call(this);
-    };
+    target.constructor.prototype.__onLeaveHandler = originalMethod;
     return descriptor;
   };
 }

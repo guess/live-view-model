@@ -36,11 +36,11 @@ export type LiveViewModel = {
   setValueFromPath: <T = unknown>(path: string[], value: T) => T | null;
 };
 
-export function liveViewModel(topic: string) {
+export function liveViewModel(topicValue: string) {
   // eslint-disable-next-line
-  return function <T extends { new (...args: any[]): object }>(constructor: T) {
+  return function <T extends { new (...args: any[]): {} }>(constructor: T) {
     return class extends constructor {
-      topic = topic;
+      readonly topic: string = topicValue;
       connection: LiveConnection;
       liveState: LiveState;
 
@@ -60,17 +60,17 @@ export function liveViewModel(topic: string) {
         }
 
         this.connection = connection!;
-        this.liveState = new LiveState(this.connection.stream, topic);
+        this.liveState = new LiveState(this.connection.stream, this.topic);
         maybeSubscribeToErrors(this);
         initializeLiveObservables(this);
       }
 
       events$(event: LiveEventType): Observable<object> {
-        return eventStream$(this.connection.stream, topic, event);
+        return eventStream$(this.connection.stream, this.topic, event);
       }
 
       get errors$(): Observable<LiveError> {
-        return errorStream$(this.connection.stream, topic);
+        return errorStream$(this.connection.stream, this.topic);
       }
 
       get subscriptions() {
@@ -98,7 +98,7 @@ export function liveViewModel(topic: string) {
 
         addSubscription(
           this,
-          this.connection.createChannel$(topic, params).subscribe({
+          this.connection.createChannel$(this.topic, params).subscribe({
             next: (channel) => {
               this._channel$.next(channel);
               channel.join();
@@ -139,13 +139,13 @@ const subscribeToJoinLeave = (vm: LiveViewModel): Subscription[] => {
       switch (status) {
         case LiveChannelStatus.connected:
           if (vm.constructor.prototype.__onJoinHandler) {
-            vm.constructor.prototype.__onJoinHandler.call(this);
+            vm.constructor.prototype.__onJoinHandler.call(vm);
           }
           break;
 
         case LiveChannelStatus.disconnected:
           if (vm.constructor.prototype.__onLeaveHandler) {
-            vm.constructor.prototype.__onLeaveHandler.call(this);
+            vm.constructor.prototype.__onLeaveHandler.call(vm);
           }
           break;
 
