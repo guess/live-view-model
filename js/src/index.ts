@@ -23,6 +23,8 @@ export {
   liveEvent,
   liveObservable,
   localObservable,
+  onJoin,
+  onLeave,
 } from './view-model.js';
 
 export { snakeToCamelCase, snakeToTitleCase } from './utils/strings.js';

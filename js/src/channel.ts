@@ -25,6 +25,10 @@ export type LiveChannelEvent = {
   detail?: object;
 };
 
+export type LiveChannelConnectEvent = {
+  status: LiveChannelStatus;
+};
+
 export class LiveChannel {
   private channel: PhoenixChannel;
   private status: LiveChannelStatus = LiveChannelStatus.disconnected;

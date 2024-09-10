@@ -14,6 +14,15 @@
 
 ### 🔒 Security
 
+## 0.2.2
+
+### ✨ Added
+- js: add `onJoin` decorator
+- js: add `onLeave` decorator
+
+### 🛠️ Changed
+- js: use `lodash-es` module instead
+
 ## 0.2.1
 
 ### ✨ Added

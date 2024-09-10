@@ -14,6 +14,8 @@ import {
   localObservable,
   setLogLevel,
   LogLevel,
+  onJoin,
+  onLeave,
 } from "live-view-model";
 import { autorun } from "mobx";
 
@@ -62,6 +64,16 @@ class LobbyViewModel {
   @liveError()
   handleError(error: LiveError) {
     console.error("LVM ERROR:", error);
+  }
+
+  @onJoin()
+  handleJoin() {
+    console.log("onJoin: JOINED!!!");
+  }
+
+  @onLeave()
+  handleLeave() {
+    console.log("onLeave: LEFT!!");
   }
 }
 

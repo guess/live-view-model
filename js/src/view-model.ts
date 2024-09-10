@@ -1,7 +1,11 @@
 import 'reflect-metadata';
 import { runInAction } from 'mobx';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { LiveChannel } from './channel.js';
+import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import {
+  LiveChannel,
+  LiveChannelConnectEvent,
+  LiveChannelStatus,
+} from './channel.js';
 import { LiveConnection } from './connect.js';
 import {
   errorStream$,
@@ -15,7 +19,7 @@ import {
   initializeLiveObservables,
 } from './decorators/observable.js';
 import { logger } from './utils/logger.js';
-import { set } from 'lodash';
+import { set } from 'lodash-es';
 
 export type LiveViewModel = {
   topic: string;
@@ -85,6 +89,10 @@ export function liveViewModel(topic: string) {
           addSubscription(this, subscription)
         );
 
+        subscribeToJoinLeave(this).forEach((subscription) =>
+          addSubscription(this, subscription)
+        );
+
         // Error subscription
         maybeSubscribeToErrors(this);
 
@@ -119,6 +127,35 @@ export function liveViewModel(topic: string) {
     };
   };
 }
+
+const subscribeToJoinLeave = (vm: LiveViewModel): Subscription[] => {
+  const subscription = vm
+    .events$('lvm-connect')
+    .pipe(
+      map((resp) => resp as LiveChannelConnectEvent),
+      map((resp) => resp.status)
+    )
+    .subscribe((status) => {
+      switch (status) {
+        case LiveChannelStatus.connected:
+          if (vm.constructor.prototype.__onJoinHandler) {
+            vm.constructor.prototype.__onJoinHandler.call(this);
+          }
+          break;
+
+        case LiveChannelStatus.disconnected:
+          if (vm.constructor.prototype.__onLeaveHandler) {
+            vm.constructor.prototype.__onLeaveHandler.call(this);
+          }
+          break;
+
+        default:
+          break;
+      }
+    });
+
+  return [subscription];
+};
 
 const setFromPath = <T = unknown>(
   vm: LiveViewModel,
@@ -221,3 +258,4 @@ export { liveEvent } from './decorators/event.js';
 export { action } from './decorators/action.js';
 export { computed } from './decorators/computed.js';
 export { liveObservable, localObservable } from './decorators/observable.js';
+export { onJoin, onLeave } from './decorators/join-leave.js';
