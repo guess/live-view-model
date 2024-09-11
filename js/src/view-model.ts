@@ -30,6 +30,7 @@ export type LiveViewModel = {
   liveState: LiveState;
   events$(event: LiveEventType): Observable<object>;
   get errors$(): Observable<LiveError>;
+  addSubscription: (subscription: Subscription) => void;
   _subscriptions: Subscription[];
   _errorSubscription: Subscription | null;
   pushEvent: (event: string, payload: object) => void;
@@ -123,6 +124,10 @@ export function liveViewModel(topicValue: string) {
 
       setValueFromPath = <T = unknown>(path: string[], value: T): T | null => {
         return setFromPath(this, path, value);
+      };
+
+      addSubscription = (subscription: Subscription) => {
+        addSubscription(this, subscription);
       };
     };
   };
