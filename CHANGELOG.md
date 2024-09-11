@@ -14,12 +14,17 @@
 
 ### 🔒 Security
 
-## 0.2.3
+## 0.2.4 (2024-09-10)
+
+### ✨ Added
+- js: add `addSubscription` to view model
+
+## 0.2.3 (2024-09-09)
 
 ### 🐛 Fixed
 - js: fix `this` not working in `onJoin` and `onLeave`
 
-## 0.2.2
+## 0.2.2 (2024-09-09)
 
 ### ✨ Added
 - js: add `onJoin` decorator
@@ -28,7 +33,7 @@
 ### 🛠️ Changed
 - js: use `lodash-es` module instead
 
-## 0.2.1
+## 0.2.1 (2024-09-09)
 
 ### ✨ Added
 - js: add `setValueFromPath` action in view model
