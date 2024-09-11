@@ -254,7 +254,7 @@ Specifies an error handler for the view model.
 
 **Usage:**
 ```typescript
-@liveError
+@liveError()
 handleError(error: any) {
   console.error("View model error:", error);
 }
