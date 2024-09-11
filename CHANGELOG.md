@@ -14,6 +14,11 @@
 
 ### 🔒 Security
 
+## 0.2.5 (2024-09-11)
+
+### 🐛 Fixed
+- js: fix `this` not working in `liveError` decorator function
+
 ## 0.2.4 (2024-09-10)
 
 ### ✨ Added
