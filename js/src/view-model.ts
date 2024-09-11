@@ -247,7 +247,7 @@ const subscribeToErrors = (vm: LiveViewModel): Subscription => {
   return vm.errors$.subscribe({
     next: (error: LiveError) => {
       if (vm.constructor.prototype.__liveErrorHandler) {
-        vm.constructor.prototype.__liveErrorHandler.call(this, error);
+        vm.constructor.prototype.__liveErrorHandler.call(vm, error);
       }
     },
   });
