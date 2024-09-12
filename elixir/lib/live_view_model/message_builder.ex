@@ -6,9 +6,6 @@ defmodule LiveViewModel.MessageBuilder do
   may or may not match the JSON encoding in certain cases. Best effort has been made to handle common
   cases such ecto schemas and DateTime. To gain further control over this process, you
   may implement the `LiveViewModel.Encoder` protocol which will allow you to define a pre-diff representation.
-
-  For a slower, but potentially more correct approach to the problem, there is a [branch](https://github.com/launchscout/live_state/tree/rust-json-diff) containing
-  an alternate json diff implemenation in rust.
   """
   alias LiveViewModel.Encoder
 

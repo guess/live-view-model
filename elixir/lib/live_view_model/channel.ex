@@ -148,7 +148,7 @@ defmodule LiveViewModel.Channel do
 
       def authorize(_channel, _payload, socket), do: {:ok, socket}
 
-      def state_key, do: :state
+      def state_key, do: :data
 
       def state_version_key, do: :version
 

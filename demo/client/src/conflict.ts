@@ -21,6 +21,9 @@ class MyViewModel {
   @liveObservable()
   count: number = 0;
 
+  @liveObservable.deep()
+  obj: object = { data: { count1: 0, count2: 0 } };
+
   @action()
   @liveEvent("update_count")
   incrementCount() {
@@ -34,15 +37,17 @@ export default async () => {
   const conn = connect("ws://localhost:4000/lvm", { token });
   const vm = new MyViewModel(conn);
   join(vm);
-  incrementCount(vm);
+  incrementCount(vm, 0);
 
   autorun(() => console.log("Count: ", vm.count));
 };
 
-const incrementCount = (vm: MyViewModel) => {
+const incrementCount = (vm: MyViewModel, timesRun: number) => {
+  if (timesRun >= 10) return;
+
   vm.incrementCount();
 
   setTimeout(() => {
-    incrementCount(vm);
+    incrementCount(vm, timesRun + 1);
   }, 200);
 };

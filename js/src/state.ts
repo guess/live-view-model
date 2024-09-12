@@ -3,7 +3,7 @@ import { Operation, applyPatch } from 'json-joy/lib/json-patch/index.js';
 import { eventStream$, LiveEventStream } from './events.js';
 
 export type LiveStateData = {
-  state: Record<string, unknown>;
+  data: Record<string, unknown>;
   version: number;
 };
 
@@ -15,7 +15,7 @@ export type LiveStatePatch = {
 };
 
 export class LiveState {
-  private _data$: BehaviorSubject<LiveStateData>;
+  private _state$: BehaviorSubject<LiveStateData>;
   private _patchSubscription: Subscription | null = null;
   private _changeSubscription: Subscription | null = null;
 
@@ -25,8 +25,8 @@ export class LiveState {
     initialState: Record<string, unknown> = {},
     initialVersion: number = 0
   ) {
-    this._data$ = new BehaviorSubject({
-      state: initialState,
+    this._state$ = new BehaviorSubject({
+      data: initialState,
       version: initialVersion,
     });
 
@@ -50,13 +50,13 @@ export class LiveState {
       )
         .pipe(
           map((event) => event as LiveStatePatch),
-          map((event) => patch(this.data, event))
+          map((event) => patch(this.state, event))
         )
         .subscribe((state) => {
           if (state) {
             this.stream.push(this.topic, 'lvm-change', state);
           } else {
-            this.stream.push(this.topic, 'lvm-refresh');
+            this.stream.push(this.topic, 'lvm-refresh', this.state);
           }
         });
     }
@@ -73,45 +73,45 @@ export class LiveState {
     return !this._changeSubscription && !this._patchSubscription;
   }
 
-  get state$(): Observable<Record<string, unknown>> {
-    return this._data$.pipe(map((data) => data.state));
+  get data$(): Observable<Record<string, unknown>> {
+    return this._state$.pipe(map((state) => state.data));
   }
 
   get version$(): Observable<number> {
-    return this._data$.pipe(map((data) => data.version));
+    return this._state$.pipe(map((data) => data.version));
   }
 
-  get state(): Record<string, unknown> {
-    return this.data.state;
+  get data(): Record<string, unknown> {
+    return this.state.data;
   }
 
-  get data$(): Observable<LiveStateData> {
-    return this._data$.asObservable();
+  get state$(): Observable<LiveStateData> {
+    return this._state$.asObservable();
   }
 
   get version(): number {
-    return this.data.version;
+    return this.state.version;
   }
 
-  get data(): LiveStateData {
-    return this._data$.getValue();
+  get state(): LiveStateData {
+    return this._state$.getValue();
   }
 
-  change({ state, version }: LiveStateChange): void {
-    this._data$.next({ state, version });
+  private change({ data, version }: LiveStateChange): void {
+    this._state$.next({ data, version });
   }
 }
 
 export const patch = (
-  data: LiveStateData,
+  state: LiveStateData,
   patch: LiveStatePatch
 ): LiveStateData | null => {
-  const { state, version } = data;
+  const { data, version } = state;
   if (versionMatches(patch.version, version)) {
-    const { doc } = applyPatch(state, patch.operations, { mutate: false });
+    const { doc } = applyPatch(data, patch.operations, { mutate: false });
     return {
       version: patch.version,
-      state: doc as Record<string, unknown>,
+      data: doc as Record<string, unknown>,
     };
   } else {
     return null;

@@ -1,4 +1,3 @@
-import { TestScheduler } from 'rxjs/testing';
 import { LiveEventStream } from '../events.js';
 import {
   LiveState,
@@ -11,7 +10,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 
 describe('patch function', () => {
   const initialState: LiveStateData = {
-    state: {
+    data: {
       count: 0,
       name: 'John',
       items: ['apple', 'banana'],
@@ -31,7 +30,7 @@ describe('patch function', () => {
     const result = patch(initialState, patchData);
 
     expect(result).toEqual({
-      state: {
+      data: {
         count: 1,
         name: 'Jane',
         items: ['apple', 'banana'],
@@ -60,7 +59,7 @@ describe('patch function', () => {
     const result = patch(initialState, patchData);
 
     expect(result).toEqual({
-      state: {
+      data: {
         count: 10,
         name: 'John',
         items: ['apple', 'banana'],
@@ -78,7 +77,7 @@ describe('patch function', () => {
     const result = patch(initialState, patchData);
 
     expect(result).toEqual({
-      state: initialState.state,
+      data: initialState.data,
       version: 2,
     });
   });
@@ -96,7 +95,7 @@ describe('patch function', () => {
     const result = patch(initialState, patchData);
 
     expect(result).toEqual({
-      state: {
+      data: {
         count: 0,
         name: 'John',
         items: ['banana', 'cherry'],
@@ -115,7 +114,7 @@ describe('patch function', () => {
     const result = patch(initialState, patchData);
 
     expect(result).not.toBe(initialState);
-    expect(initialState.state.count).toBe(0);
+    expect(initialState.data.count).toBe(0);
   });
 });
 
@@ -136,19 +135,19 @@ describe('LiveState', () => {
   });
 
   it('should set initial state', () => {
-    expect(liveState.state).toEqual(initialState);
+    expect(liveState.data).toEqual(initialState);
     expect(liveState.version).toEqual(initialVersion);
   });
 
   it('should use defaults if initial state is not provided', () => {
     liveState = new LiveState(stream, topic);
-    expect(liveState.state).toEqual({});
+    expect(liveState.data).toEqual({});
     expect(liveState.version).toEqual(0);
   });
 
   it('should change state when receiving lvm-change event', () => {
     const event: LiveStateChange = {
-      state: {
+      data: {
         count: 5,
         name: 'Jill',
         items: ['apple', 'strawberry'],
@@ -156,7 +155,7 @@ describe('LiveState', () => {
       version: 10,
     };
     stream.push(topic, 'lvm-change', event);
-    expect(liveState.state).toEqual(event.state);
+    expect(liveState.data).toEqual(event.data);
     expect(liveState.version).toEqual(event.version);
   });
 
@@ -170,10 +169,10 @@ describe('LiveState', () => {
     };
 
     stream.push(topic, 'lvm-patch', event);
-    await firstValueFrom(liveState.data$.pipe(timeout(1000)));
+    await firstValueFrom(liveState.state$.pipe(timeout(1000)));
 
-    expect(liveState.data).toEqual({
-      state: {
+    expect(liveState.state).toEqual({
+      data: {
         count: 1,
         name: 'Jane',
         items: ['apple', 'banana'],
