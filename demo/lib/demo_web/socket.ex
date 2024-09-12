@@ -3,6 +3,7 @@ defmodule DemoWeb.Socket do
   use Phoenix.Socket
 
   channel("room:*", DemoWeb.ChatChannel)
+  channel("conflict", DemoWeb.ConflictChannel)
 
   @impl true
   def connect(%{"token" => "socket_token"}, socket) do

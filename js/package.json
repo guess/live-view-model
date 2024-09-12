@@ -71,7 +71,7 @@
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.4.0"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@1.22.22",
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,
