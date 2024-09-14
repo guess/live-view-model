@@ -14,6 +14,11 @@
 
 ### 🔒 Security
 
+## 0.2.6 (2024-09-13)
+
+### 🐛 Fixed
+- js: export everything
+
 ## 0.2.5 (2024-09-11)
 
 ### 🐛 Fixed
