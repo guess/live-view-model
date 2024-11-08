@@ -20,14 +20,15 @@ import {
 } from './decorators/observable.js';
 import { logger } from './utils/logger.js';
 import { set } from 'lodash-es';
+import { parseTopicWithParams } from './utils/topic.js';
 
 export type LiveViewModel = {
   topic: string;
-  join: (params?: object) => void;
+  join: (params?: Record<string, unknown>) => void;
   leave: () => void;
   get channel(): LiveChannel | null;
   connection: LiveConnection;
-  liveState: LiveState;
+  liveState?: LiveState;
   events$(event: LiveEventType): Observable<object>;
   get errors$(): Observable<LiveError>;
   addSubscription: (subscription: Subscription) => void;
@@ -37,13 +38,14 @@ export type LiveViewModel = {
   setValueFromPath: <T = unknown>(path: string[], value: T) => T | null;
 };
 
-export function liveViewModel(topicValue: string) {
+export function liveViewModel(topicPattern: string) {
   // eslint-disable-next-line
   return function <T extends { new (...args: any[]): {} }>(constructor: T) {
     return class extends constructor {
-      readonly topic: string = topicValue;
+      readonly topicPattern: string = topicPattern;
+      _topic: string = topicPattern;
       connection: LiveConnection;
-      liveState: LiveState;
+      liveState?: LiveState;
 
       _channel$ = new BehaviorSubject<LiveChannel | null>(null);
       _subscriptions: Subscription[] = [];
@@ -61,9 +63,11 @@ export function liveViewModel(topicValue: string) {
         }
 
         this.connection = connection!;
-        this.liveState = new LiveState(this.connection.stream, this.topic);
-        maybeSubscribeToErrors(this);
         initializeLiveObservables(this);
+      }
+
+      get topic(): string {
+        return this._topic;
       }
 
       events$(event: LiveEventType): Observable<object> {
@@ -78,9 +82,12 @@ export function liveViewModel(topicValue: string) {
         return this._subscriptions || [];
       }
 
-      join = (params?: object) => {
+      join = (params?: Record<string, unknown>) => {
+        this._topic = parseTopicWithParams(this.topicPattern, params);
+        this.liveState = new LiveState(this.connection.stream, this._topic);
         this.liveState.start();
 
+        maybeSubscribeToErrors(this);
         subscribeToLiveObservableChanges(this).forEach((subscription) =>
           addSubscription(this, subscription)
         );
@@ -110,7 +117,7 @@ export function liveViewModel(topicValue: string) {
 
       leave = () => {
         this.channel?.leave();
-        this.liveState.dispose();
+        this.liveState?.dispose();
         diposeSubscriptions(this);
       };
 
@@ -164,11 +171,12 @@ const subscribeToJoinLeave = (vm: LiveViewModel): Subscription[] => {
 
 const setFromPath = <T = unknown>(
   vm: LiveViewModel,
-  path: string[],
+  path: Path,
   value: T
 ): T | null => {
-  const topLevelProp = path[0];
-  const restOfPath = path.slice(1);
+  const pathArray = pathToArray(path);
+  const topLevelProp = pathArray[0];
+  const restOfPath = pathArray.slice(1);
   let finalValue;
 
   if (!topLevelProp) return null;
@@ -193,6 +201,19 @@ const setFromPath = <T = unknown>(
   return finalValue || null;
 };
 
+type Path = string | string[];
+
+const pathToArray = (path: Path): string[] => {
+  if (Array.isArray(path)) {
+    return path;
+  } else if (typeof path === 'string') {
+    return path.split('/').filter((s) => !!s);
+  } else {
+    // TODO: Should we throw instead?
+    return [];
+  }
+};
+
 const addSubscription = (vm: LiveViewModel, subscription: Subscription) => {
   vm._subscriptions.push(subscription);
 };
@@ -215,6 +236,10 @@ const subscribeToLiveObservableChanges = (
   vm: LiveViewModel
 ): Subscription[] => {
   const liveObservableProps = getLiveObservableProperties(vm);
+
+  if (!vm.liveState) {
+    throw new Error('Must join channel before subscribing to changes');
+  }
 
   const subscription = vm.liveState.state$.subscribe((payload) => {
     runInAction(() => {
@@ -253,7 +278,7 @@ const subscribeToErrors = (vm: LiveViewModel): Subscription => {
   });
 };
 
-export const join = (vm: unknown, params?: object) =>
+export const join = (vm: unknown, params?: Record<string, unknown>) =>
   (vm as LiveViewModel).join(params);
 
 export const leave = (vm: unknown) => (vm as LiveViewModel).leave();

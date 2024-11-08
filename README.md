@@ -67,6 +67,7 @@ This project is currently under active development. The API and features are sub
 ## Use cases
 
 LiveViewModel is particularly well-suited for:
+
 - Real-time dashboards and monitoring applications
 - Collaborative tools and multi-user applications
 - Mobile applications that require live updates from a server
@@ -128,7 +129,12 @@ LiveViewModel is particularly well-suited for:
 2. Create a view model:
 
    ```typescript
-   import { liveViewModel, LiveConnection, liveObservable, liveEvent } from "live-view-model";
+   import {
+     liveViewModel,
+     LiveConnection,
+     liveObservable,
+     liveEvent,
+   } from "live-view-model";
 
    @liveViewModel("room:lobby")
    class MyViewModel {
@@ -153,7 +159,7 @@ LiveViewModel is particularly well-suited for:
    const viewModel = new MyViewModel(conn);
    join(viewModel);
 
-   autorun(() => console.log('Count changed:', viewModel.count));
+   autorun(() => console.log("Count changed:", viewModel.count));
 
    viewModel.updateCount(5);
    viewModel.updateCount(4);
@@ -168,16 +174,19 @@ LiveViewModel is particularly well-suited for:
 Sets up a class as a live view model, connecting it to a specific Phoenix channel.
 
 **Usage:**
+
 ```typescript
-@liveViewModel("room:lobby")
+@liveViewModel("room:{roomId}")
 class LobbyViewModel {
   // ...
 }
 ```
 
 **Functionality:**
+
 - Creates a channel subscription based on the provided topic
 - Sets up event listeners for incoming messages
+- Channels can have dynamic topics using `{}` placeholders (e.g., `"room:{roomId}"`) that are replaced with the corresponding `params` when `join`ing the channel
 
 ### @liveObservable
 
@@ -186,6 +195,7 @@ class LobbyViewModel {
 Marks a property for synchronization with the server and integrates with MobX to create observable properties.
 
 **Usage:**
+
 ```typescript
 @liveObservable("server_count")
 count: number = 0;
@@ -195,6 +205,7 @@ messages: ChatMessage[] = [];
 ```
 
 **Functionality:**
+
 - Makes the property a MobX observable
 - Maps the property to a server-side key (uses the property name if not specified)
 - Sets up the property for automatic updates when receiving data from the server
@@ -211,6 +222,7 @@ messages: ChatMessage[] = [];
 Marks a property as a local observable, not synchronized with the server.
 
 **Usage:**
+
 ```typescript
 @localObservable()
 localCount: number = 0;
@@ -220,6 +232,7 @@ localReference: SomeType | null = null;
 ```
 
 **Functionality:**
+
 - Makes the property a MobX observable
 - Does not synchronize the property with the server
 - Provides variants for different MobX observable types:
@@ -235,6 +248,7 @@ localReference: SomeType | null = null;
 Defines a method that sends events to the server when called.
 
 **Usage:**
+
 ```typescript
 @liveEvent("notify")
 notify(message: string) {
@@ -243,6 +257,7 @@ notify(message: string) {
 ```
 
 **Functionality:**
+
 - Wraps the original method
 - Sends the returned payload to the server using the specified event name
 
@@ -253,6 +268,7 @@ notify(message: string) {
 Specifies an error handler for the view model.
 
 **Usage:**
+
 ```typescript
 @liveError()
 handleError(error: any) {
@@ -261,6 +277,7 @@ handleError(error: any) {
 ```
 
 **Functionality:**
+
 - Sets up a central error handler for the view model
 - Called when channel errors occur
 
@@ -271,6 +288,7 @@ handleError(error: any) {
 Alias for MobX action decorator.
 
 **Usage:**
+
 ```typescript
 @action()
 setCount(count: number) {
@@ -279,6 +297,7 @@ setCount(count: number) {
 ```
 
 **Functionality:**
+
 - Wraps the method in a MobX action for optimal performance when modifying observables
 
 ### @computed
@@ -288,6 +307,7 @@ setCount(count: number) {
 Alias for MobX computed decorator.
 
 **Usage:**
+
 ```typescript
 @computed()
 get messageCount() {
@@ -296,6 +316,7 @@ get messageCount() {
 ```
 
 **Functionality:**
+
 - Creates a MobX computed property, which is automatically updated when its dependencies change
 
 ## Advanced features
