@@ -41,6 +41,7 @@ This project is currently under active development. The API and features are sub
   - [@liveObservable](#liveobservable)
   - [@localObservable](#localobservable)
   - [@liveEvent](#liveevent)
+  - [@handleEvent](#handleevent)
   - [@liveError](#liveerror)
   - [@action](#action)
   - [@computed](#computed)
@@ -62,7 +63,7 @@ This project is currently under active development. The API and features are sub
 
 - `LiveConnection`: Manages the connection to the server and provides methods for joining channels and sending events.
 - `LiveViewModel`: A decorator and base class for creating view models that sync with the server state.
-- Various decorators (`@liveObservable`, `@localObservable`, `@action`, `@computed`, `@liveEvent`, `@liveError`) for defining reactive properties and methods.
+- Various decorators (`@liveObservable`, `@localObservable`, `@action`, `@computed`, `@liveEvent`, `@handleEvent`, `@liveError`) for defining reactive properties and methods.
 
 ## Use cases
 
@@ -245,7 +246,7 @@ localReference: SomeType | null = null;
 
 `@liveEvent(eventName: string)`
 
-Defines a method that sends events to the server when called.
+Defines a method that sends events to the server when called. Returns the payload to be sent to the server. Alternatively, you can use `pushEvent(eventName, payload)` to send events manually.
 
 **Usage:**
 
