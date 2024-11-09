@@ -244,21 +244,23 @@ const subscribeToLiveObservableChanges = (
     throw new Error('Must join channel before subscribing to changes');
   }
 
-  const subscription = vm.liveState.state$.subscribe((payload) => {
-    runInAction(() => {
-      for (const prop of liveObservableProps) {
-        const serverKey = prop.serverKey || prop.propertyKey;
-        if (serverKey in payload) {
-          logger.log(
-            `updating ${prop.propertyKey.toString()} to:`,
-            payload[serverKey.toString()]
-          );
-          // eslint-disable-next-line
-          (vm as any)[prop.propertyKey] = payload[serverKey.toString()];
+  const subscription = vm.liveState.state$.subscribe(
+    (payload: Record<string, unknown>) => {
+      runInAction(() => {
+        for (const prop of liveObservableProps) {
+          const serverKey = prop.serverKey || prop.propertyKey;
+          if (serverKey in payload) {
+            logger.log(
+              `updating ${prop.propertyKey.toString()} to:`,
+              payload[serverKey.toString()]
+            );
+            // eslint-disable-next-line
+            (vm as any)[prop.propertyKey] = payload[serverKey.toString()];
+          }
         }
-      }
-    });
-  });
+      });
+    }
+  );
 
   return [subscription];
 };
