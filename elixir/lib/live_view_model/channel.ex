@@ -213,8 +213,8 @@ defmodule LiveViewModel.Channel do
 
       def push_events(socket, event), do: push_event(socket, event)
 
-      def push_event(socket, %Event{name: name, detail: detail}) do
-        push(socket, name, detail)
+      def push_event(socket, %Event{} = event) do
+        push(socket, "event", event)
       end
 
       def push_error(socket, message) when is_binary(message) do

@@ -17,6 +17,7 @@ import {
   onJoin,
   onLeave,
   LiveViewModel,
+  handleEvent,
 } from "live-view-model";
 import { autorun } from "mobx";
 
@@ -36,7 +37,7 @@ type ChatMessage = {
 
 interface LobbyViewModel extends LiveViewModel {}
 
-@liveViewModel("room:lobby")
+@liveViewModel("room:{id}")
 class LobbyViewModel {
   constructor(_conn: LiveConnection) {}
 
@@ -69,6 +70,16 @@ class LobbyViewModel {
     console.error("LVM ERROR:", error);
   }
 
+  @handleEvent("navigate")
+  handleNavigate({ to }: { to: string }) {
+    console.log("HANDLE EVENT: navigate to:", to);
+  }
+
+  @handleEvent("message")
+  handleMessage(detail: object) {
+    console.log("HANDLE EVENT: message", detail);
+  }
+
   @onJoin()
   handleJoin() {
     console.log("onJoin called", this.topic);
@@ -86,7 +97,7 @@ class LobbyViewModel {
 const token = "socket_token";
 const conn = connect("ws://localhost:4000/lvm", { token });
 const lobby = new LobbyViewModel(conn);
-join(lobby);
+join(lobby, { id: 1234 });
 
 console.log("topic:", lobby.topic);
 
@@ -99,6 +110,12 @@ autorun(() => {
   }
 });
 autorun(() => console.log("UPDATE: local count:", lobby.count));
+
+lobby.sendMessage("reply");
+
+setTimeout(() => {
+  lobby.sendMessage("reply2");
+}, 1000);
 
 lobby.sendMessage("hello!");
 lobby.setCount(1);

@@ -24,3 +24,35 @@ export function liveEvent(eventName: string) {
     return descriptor;
   };
 }
+
+interface HandleEventDecoratorMetadata {
+  name: string;
+  handler: (payload?: object) => void;
+}
+
+export function handleEvent(eventName: string) {
+  return function (
+    target: object,
+    _propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const existingMetadata: HandleEventDecoratorMetadata[] =
+      target.constructor.prototype.__liveEventHandlers || [];
+    existingMetadata.push({
+      name: eventName,
+      handler: function (payload?: object) {
+        originalMethod.call(this, payload);
+      },
+    });
+    target.constructor.prototype.__liveEventHandlers = existingMetadata;
+
+    return descriptor;
+  };
+}
+
+export function getLiveEventHandlers(
+  target: object
+): HandleEventDecoratorMetadata[] {
+  return target.constructor.prototype.__liveEventHandlers || [];
+}

@@ -4,6 +4,7 @@ import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
 import {
   LiveChannel,
   LiveChannelConnectEvent,
+  LiveChannelEvent,
   LiveChannelStatus,
 } from './channel.js';
 import { LiveConnection } from './connect.js';
@@ -21,6 +22,7 @@ import {
 import { logger } from './utils/logger.js';
 import { set } from 'lodash-es';
 import { parseTopicWithParams } from './utils/topic.js';
+import { getLiveEventHandlers } from './decorators/event.js';
 
 export type LiveViewModel = {
   topic: string;
@@ -88,6 +90,7 @@ export function liveViewModel(topicPattern: string) {
         this.liveState.start();
 
         maybeSubscribeToErrors(this);
+        subscribeToEvents(this);
         subscribeToLiveObservableChanges(this).forEach((subscription) =>
           addSubscription(this, subscription)
         );
@@ -107,7 +110,7 @@ export function liveViewModel(topicPattern: string) {
         addSubscription(
           this,
           this.connection.createChannel$(this.topic, params).subscribe({
-            next: (channel) => {
+            next: (channel: LiveChannel) => {
               this._channel$.next(channel);
               channel.join();
             },
@@ -144,10 +147,10 @@ const subscribeToJoinLeave = (vm: LiveViewModel): Subscription[] => {
   const subscription = vm
     .events$('lvm-connect')
     .pipe(
-      map((resp) => resp as LiveChannelConnectEvent),
-      map((resp) => resp.status)
+      map((resp: object) => resp as LiveChannelConnectEvent),
+      map((resp: LiveChannelConnectEvent) => resp.status)
     )
-    .subscribe((status) => {
+    .subscribe((status: LiveChannelStatus) => {
       switch (status) {
         case LiveChannelStatus.connected:
           if (vm.constructor.prototype.__onJoinHandler) {
@@ -278,13 +281,30 @@ const subscribeToErrors = (vm: LiveViewModel): Subscription => {
   });
 };
 
+const subscribeToEvents = (vm: LiveViewModel): Subscription => {
+  return vm
+    .events$('lvm-event')
+    .pipe(map((e: object) => e as LiveChannelEvent))
+    .subscribe({
+      next: (event: LiveChannelEvent) => {
+        if (vm.constructor.prototype.__liveEventHandlers) {
+          const eventHandlers = getLiveEventHandlers(vm);
+          const eventHandler = eventHandlers.find((h) => h.name === event.name);
+          if (eventHandler) {
+            eventHandler.handler.call(vm, event.detail);
+          }
+        }
+      },
+    });
+};
+
 export const join = (vm: unknown, params?: Record<string, unknown>) =>
   (vm as LiveViewModel).join(params);
 
 export const leave = (vm: unknown) => (vm as LiveViewModel).leave();
 
 export { liveError } from './decorators/error.js';
-export { liveEvent } from './decorators/event.js';
+export { liveEvent, handleEvent } from './decorators/event.js';
 export { action } from './decorators/action.js';
 export { computed } from './decorators/computed.js';
 export { liveObservable, localObservable } from './decorators/observable.js';

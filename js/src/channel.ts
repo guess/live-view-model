@@ -57,6 +57,9 @@ export class LiveChannel {
         .receive('error', (error: PhoenixChannelError) => {
           this.emitError('channel', error);
         });
+      this.channel.on('event', (event: LiveChannelEvent) => {
+        this.emitEvent('lvm-event', event);
+      });
       this.channel.on('state:change', (state: LiveStateChange) => {
         this.emitEvent('lvm-change', state);
       });

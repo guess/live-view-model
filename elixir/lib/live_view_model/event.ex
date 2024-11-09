@@ -1,4 +1,5 @@
 defmodule LiveViewModel.Event do
+  @derive {Jason.Encoder, only: [:name, :detail]}
   defstruct name: "", detail: %{}
 
   @typedoc """

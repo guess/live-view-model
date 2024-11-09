@@ -261,6 +261,26 @@ notify(message: string) {
 - Wraps the original method
 - Sends the returned payload to the server using the specified event name
 
+### @handleEvent
+
+`@handleEvent(eventName: string)`
+
+Defines a method that handles events received from the server.
+
+**Usage:**
+
+```typescript
+@handleEvent("navigate")
+handleMessage(payload: any) {
+  console.log("Navigating to:", payload.path);
+}
+```
+
+## **Functionality:**
+
+- Handles incoming events from the server
+- Calls the decorated method with the event payload from the server
+
 ### @liveError
 
 `@liveError()`
