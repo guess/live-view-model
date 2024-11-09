@@ -1,4 +1,3 @@
-import { TestScheduler } from 'rxjs/testing';
 import { LiveEventStream } from '../events.js';
 import {
   LiveState,

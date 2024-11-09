@@ -1,6 +1,6 @@
 {
   "name": "live-view-model",
-  "version": "0.2.6",
+  "version": "0.3.1",
   "type": "module",
   "description": "Core functionality for live-view-model",
   "main": "./lib/index.js",
@@ -16,6 +16,8 @@
     "lib"
   ],
   "scripts": {
+    "version": "npm version patch",
+    "prepare": "yarn build && cp ../README.md . && cp ../LICENSE .",
     "release": "npm publish",
     "build": "tsc --project tsconfig.json",
     "watch": "tsc --watch",
